@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,9 @@ import 'package:gymgo/login_page.dart';
 import 'package:gymgo/utils.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:gymgo/widgets/task_card.dart';
+import 'package:intl/intl.dart';
+
+import 'add_new_class.dart';
 
 class MyHomePage extends StatefulWidget {
   // static route() => MaterialPageRoute(
@@ -23,10 +27,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final dateFormatter = DateFormat('yyyy-MM-dd');
+    final timeFormatter = DateFormat('HH:mm:ss');
+
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.white,
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         automaticallyImplyLeading: false,
         title: const Text('Classes'),
         actions: [
@@ -47,59 +54,87 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             const DateSelector(),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 13,
-                itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      const Expanded(
-                        child: TaskCard(
-                          color: Color.fromRGBO(
-                            246,
-                            222,
-                            194,
-                            1,
-                          ),
-                          headerText: 'Strength',
-                          descriptionText: 'Coach Neal',
-                          scheduledDate: '18:00 - 19:00',
-                        ),
-                      ),
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          color: strengthenColor(
-                            const Color.fromRGBO(246, 222, 194, 1),
-                            0.69,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Text(
-                          '10:00AM',
-                          style: TextStyle(
-                            fontSize: 17,
-                          ),
-                        ),
-                      )
-                    ],
+            FutureBuilder(
+              future: FirebaseFirestore.instance.collection("classes").get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              ),
+                }
+                if (!snapshot.hasData) {
+                  return const Text('No Classes Today');
+                }
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      DateFormat _dateFormat = DateFormat('Hm');
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: TaskCard(
+                              color: Theme.of(context).colorScheme.primary,
+                              headerText:
+                                  snapshot.data!.docs[index].data()['title'],
+                              descriptionText:
+                                  snapshot.data!.docs[index].data()['coach'],
+                              startTime: _dateFormat
+                                  .format(snapshot.data!.docs[index]
+                                      .data()['startTime']
+                                      .toDate())
+                                  .toString(),
+                              endTime: _dateFormat
+                                  .format(snapshot.data!.docs[index]
+                                      .data()['endTime']
+                                      .toDate())
+                                  .toString(),
+                            ),
+                          ),
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: strengthenColor(
+                                const Color.fromRGBO(246, 222, 194, 1),
+                                0.69,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: Text(
+                              '10:00AM',
+                              style: TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                );
+              },
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         child: Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddNewClass(),
+            ),
+          );
+        },
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.blue,
+        color: Theme.of(context).colorScheme.primary,
         child: Container(height: 50.0),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

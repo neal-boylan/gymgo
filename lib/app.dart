@@ -18,12 +18,21 @@ class MyApp extends StatelessWidget {
   // }
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Task Management',
+      title: 'GymGo',
       theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green,
+          brightness: Brightness.light,
+        ),
         fontFamily: 'Cera Pro',
+        appBarTheme: AppBarTheme(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Colors.white,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             minimumSize: const Size(double.infinity, 60),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
@@ -34,15 +43,15 @@ class MyApp extends StatelessWidget {
           contentPadding: const EdgeInsets.all(27),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.grey.shade300,
-              width: 3,
+              color: Colors.green,
+              width: 1,
             ),
             borderRadius: BorderRadius.circular(10),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              // color: Pallete.gradient2,
-              width: 3,
+            borderSide: BorderSide(
+              color: Colors.green, //Theme.of(context).colorScheme.primary,
+              width: 1,
             ),
             borderRadius: BorderRadius.circular(10),
           ),

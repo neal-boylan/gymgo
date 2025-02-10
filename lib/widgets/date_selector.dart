@@ -85,12 +85,12 @@ class _DateSelectorState extends State<DateSelector> {
                         const EdgeInsets.only(right: 8), // Space between items
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Colors.deepOrangeAccent
-                          : Colors.transparent,
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.inversePrimary,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: isSelected
-                            ? Colors.deepOrangeAccent
+                            ? Theme.of(context).colorScheme.primary
                             : Colors.grey.shade300,
                         width: 2,
                       ),
@@ -101,7 +101,7 @@ class _DateSelectorState extends State<DateSelector> {
                         Text(
                           DateFormat('d').format(date), // Day of the month
                           style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black87,
+                            color: isSelected ? Colors.white : Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
@@ -111,7 +111,7 @@ class _DateSelectorState extends State<DateSelector> {
                           DateFormat('E')
                               .format(date), // Short weekday (Mon, Tue, etc.)
                           style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black87,
+                            color: isSelected ? Colors.white : Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

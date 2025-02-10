@@ -4,13 +4,15 @@ class TaskCard extends StatelessWidget {
   final Color color;
   final String headerText;
   final String descriptionText;
-  final String scheduledDate;
+  final String startTime;
+  final String endTime;
   const TaskCard({
     super.key,
     required this.color,
     required this.headerText,
     required this.descriptionText,
-    required this.scheduledDate,
+    required this.startTime,
+    required this.endTime,
   });
 
   @override
@@ -24,7 +26,9 @@ class TaskCard extends StatelessWidget {
         left: 15,
       ),
       decoration: BoxDecoration(
-        color: color,
+        color: Colors.transparent,
+        border:
+            Border.all(color: Theme.of(context).colorScheme.primary, width: 3),
         borderRadius: const BorderRadius.all(
           Radius.circular(15),
         ),
@@ -50,9 +54,21 @@ class TaskCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            Text(
-              scheduledDate,
-              style: const TextStyle(fontSize: 17),
+            Row(
+              children: [
+                Text(
+                  startTime,
+                  style: const TextStyle(fontSize: 17),
+                ),
+                Text(
+                  ' - ',
+                  style: const TextStyle(fontSize: 17),
+                ),
+                Text(
+                  endTime,
+                  style: const TextStyle(fontSize: 17),
+                ),
+              ],
             ),
           ],
         ),

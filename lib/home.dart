@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:gymgo/widgets/task_card.dart';
 
-import 'add_new_task.dart';
+import 'add_new_class.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -35,7 +35,8 @@ class HomeScreen extends StatelessWidget {
                           ),
                           headerText: 'Strength',
                           descriptionText: 'Dave',
-                          scheduledDate: '18:00 - 19:00',
+                          startTime: '',
+                          endTime: '',
                         ),
                       ),
                       // Container(
@@ -72,7 +73,7 @@ class HomeScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddNewTask(),
+              builder: (context) => const AddNewClass(),
             ),
           );
         },

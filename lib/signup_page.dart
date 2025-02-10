@@ -48,7 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Sign Up.',
+                'Sign Up',
                 style: TextStyle(
                   fontSize: 50,
                   fontWeight: FontWeight.bold,
@@ -58,20 +58,40 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 20),
               TextFormField(
                 controller: emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Email',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    //<-- SEE HERE
+                    borderSide: BorderSide(
+                        width: 4, color: Theme.of(context).colorScheme.primary),
+                  ),
                 ),
               ),
               const SizedBox(height: 15),
               TextFormField(
                 controller: passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Password',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    //<-- SEE HERE
+                    borderSide: BorderSide(
+                        width: 4, color: Theme.of(context).colorScheme.primary),
+                  ),
                 ),
                 obscureText: true,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary),
                 onPressed: () async {
                   await createUserWithEmailAndPassword();
                 },
