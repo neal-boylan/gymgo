@@ -14,6 +14,7 @@ class MyHomePage extends StatefulWidget {
   // static route() => MaterialPageRoute(
   //       builder: (context) => const MyHomePage(),
   //     );
+
   const MyHomePage({super.key});
 
   @override
@@ -21,6 +22,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  DateTime selectedDate = DateTime.now();
+
   Future<void> signOutUser() async {
     await FirebaseAuth.instance.signOut();
   }
@@ -29,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final dateFormatter = DateFormat('yyyy-MM-dd');
     final timeFormatter = DateFormat('HH:mm:ss');
-
+    print('selectedDate: $selectedDate');
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.white,
@@ -53,9 +56,21 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           children: [
-            const DateSelector(),
-            FutureBuilder(
-              future: FirebaseFirestore.instance.collection("classes").get(),
+            DateSelector(
+              selectedDate: selectedDate,
+              onTap: (date) {
+                setState(() {
+                  selectedDate = date;
+                });
+              },
+            ),
+            // FutureBuilder(
+            //   future: FirebaseFirestore.instance.collection("classes").get(),
+            StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection("classes")
+                  .where('startTime', isGreaterThanOrEqualTo: selectedDate)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -65,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (!snapshot.hasData) {
                   return const Text('No Classes Today');
                 }
+
                 return Expanded(
                   child: ListView.builder(
                     itemCount: snapshot.data!.docs.length,
