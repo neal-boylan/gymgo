@@ -32,7 +32,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final dateFormatter = DateFormat('yyyy-MM-dd');
     final timeFormatter = DateFormat('HH:mm:ss');
+    DateTime selectedDatePlus =
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day + 1);
+
     print('selectedDate: $selectedDate');
+    print('selectedDatePlus: $selectedDatePlus');
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.white,
@@ -60,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
               selectedDate: selectedDate,
               onTap: (date) {
                 setState(() {
-                  selectedDate = date;
+                  selectedDate = DateTime(date.year, date.month, date.day);
                 });
               },
             ),
@@ -70,6 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
               stream: FirebaseFirestore.instance
                   .collection("classes")
                   .where('startTime', isGreaterThanOrEqualTo: selectedDate)
+                  .where('startTime',
+                      isLessThan: DateTime(selectedDate.year,
+                          selectedDate.month, selectedDate.day + 1))
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -77,61 +84,62 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: CircularProgressIndicator(),
                   );
                 }
-                if (!snapshot.hasData) {
-                  return const Text('No Classes Today');
+                // if (!snapshot.hasData) {
+                if (snapshot.data!.docs.isEmpty) {
+                  return Center(child: const Text('No Classes Today'));
+                } else {
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        DateFormat _dateFormat = DateFormat('Hm');
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: TaskCard(
+                                color: Theme.of(context).colorScheme.primary,
+                                headerText:
+                                    snapshot.data!.docs[index].data()['title'],
+                                descriptionText:
+                                    snapshot.data!.docs[index].data()['coach'],
+                                startTime: _dateFormat
+                                    .format(snapshot.data!.docs[index]
+                                        .data()['startTime']
+                                        .toDate())
+                                    .toString(),
+                                endTime: _dateFormat
+                                    .format(snapshot.data!.docs[index]
+                                        .data()['endTime']
+                                        .toDate())
+                                    .toString(),
+                              ),
+                            ),
+                            Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: strengthenColor(
+                                  const Color.fromRGBO(246, 222, 194, 1),
+                                  0.69,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Text(
+                                '10:00AM',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                ),
+                              ),
+                            )
+                          ],
+                        );
+                      },
+                    ),
+                  );
                 }
-
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      DateFormat _dateFormat = DateFormat('Hm');
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: TaskCard(
-                              color: Theme.of(context).colorScheme.primary,
-                              headerText:
-                                  snapshot.data!.docs[index].data()['title'],
-                              descriptionText:
-                                  snapshot.data!.docs[index].data()['coach'],
-                              startTime: _dateFormat
-                                  .format(snapshot.data!.docs[index]
-                                      .data()['startTime']
-                                      .toDate())
-                                  .toString(),
-                              endTime: _dateFormat
-                                  .format(snapshot.data!.docs[index]
-                                      .data()['endTime']
-                                      .toDate())
-                                  .toString(),
-                            ),
-                          ),
-                          Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                              color: strengthenColor(
-                                const Color.fromRGBO(246, 222, 194, 1),
-                                0.69,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Text(
-                              '10:00AM',
-                              style: TextStyle(
-                                fontSize: 17,
-                              ),
-                            ),
-                          )
-                        ],
-                      );
-                    },
-                  ),
-                );
               },
             ),
           ],
