@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/login_page.dart';
-import 'package:gymgo/utils.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:gymgo/widgets/task_card.dart';
 import 'package:intl/intl.dart';
@@ -14,7 +13,6 @@ class MyHomePage extends StatefulWidget {
   // static route() => MaterialPageRoute(
   //       builder: (context) => const MyHomePage(),
   //     );
-
   const MyHomePage({super.key});
 
   @override
@@ -30,13 +28,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormatter = DateFormat('yyyy-MM-dd');
-    final timeFormatter = DateFormat('HH:mm:ss');
-    DateTime selectedDatePlus =
-        DateTime(selectedDate.year, selectedDate.month, selectedDate.day + 1);
-
-    print('selectedDate: $selectedDate');
-    print('selectedDatePlus: $selectedDatePlus');
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.white,
@@ -114,26 +105,26 @@ class _MyHomePageState extends State<MyHomePage> {
                                     .toString(),
                               ),
                             ),
-                            Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                color: strengthenColor(
-                                  const Color.fromRGBO(246, 222, 194, 1),
-                                  0.69,
-                                ),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: Text(
-                                '10:00AM',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                ),
-                              ),
-                            )
+                            // Container(
+                            //   height: 50,
+                            //   width: 50,
+                            //   decoration: BoxDecoration(
+                            //     color: strengthenColor(
+                            //       const Color.fromRGBO(246, 222, 194, 1),
+                            //       0.69,
+                            //     ),
+                            //     shape: BoxShape.circle,
+                            //   ),
+                            // ),
+                            // const Padding(
+                            //   padding: EdgeInsets.all(12.0),
+                            //   child: Text(
+                            //     '10:00AM',
+                            //     style: TextStyle(
+                            //       fontSize: 17,
+                            //     ),
+                            //   ),
+                            // )
                           ],
                         );
                       },
