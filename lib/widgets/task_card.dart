@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../signin_class.dart';
-
 class TaskCard extends StatelessWidget {
   final Color color;
   final String headerText;
   final String descriptionText;
   final String startTime;
   final String endTime;
+  final String uid;
+  final void Function()? onTap;
   const TaskCard({
     super.key,
     required this.color,
@@ -15,11 +15,14 @@ class TaskCard extends StatelessWidget {
     required this.descriptionText,
     required this.startTime,
     required this.endTime,
+    required this.uid,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -77,14 +80,6 @@ class TaskCard extends StatelessWidget {
           ),
         ),
       ),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SignInClass(),
-          ),
-        );
-      },
     );
   }
 }

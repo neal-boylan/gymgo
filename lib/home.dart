@@ -36,6 +36,7 @@ class HomeScreen extends StatelessWidget {
                           descriptionText: 'Dave',
                           startTime: '',
                           endTime: '',
+                          uid: '',
                         ),
                       ),
                       // Container(
