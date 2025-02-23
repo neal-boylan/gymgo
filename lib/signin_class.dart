@@ -13,6 +13,7 @@ class SignInClass extends StatefulWidget {
 class _SignInClassState extends State<SignInClass> {
   final String docId;
   _SignInClassState(this.docId);
+  List<dynamic> items = [];
 
   Future<void> addMemberClassToDb() async {
     try {
@@ -27,36 +28,82 @@ class _SignInClassState extends State<SignInClass> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      print('docId: $docId');
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('classes')
+          .doc(docId)
+          .get();
+
+      if (doc.exists) {
+        setState(() {
+          items = List.from(doc['signins']); // Extract and store in state
+        });
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sign In To Class'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                onPressed: () async {
-                  await addMemberClassToDb();
-                },
-                child: const Text(
-                  'SIGN In',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      // body: SingleChildScrollView(
+      //   child: Padding(
+      //     padding: const EdgeInsets.all(20.0),
+      //     child: Column(
+      //       children: [
+      //         const SizedBox(height: 10),
+      //         ElevatedButton(
+      //           style: ElevatedButton.styleFrom(
+      //               backgroundColor: Theme.of(context).colorScheme.primary),
+      //           onPressed: () async {
+      //             await addMemberClassToDb();
+      //           },
+      //           child: const Text(
+      //             'SIGN In',
+      //             style: TextStyle(
+      //               fontSize: 16,
+      //               color: Colors.white,
+      //             ),
+      //           ),
+      //         ),
+      //         items.isEmpty
+      //             ? Center(
+      //                 child: CircularProgressIndicator()) // Loading indicator
+      //             : ListView.builder(
+      //                 itemCount: items.length,
+      //                 itemBuilder: (context, index) {
+      //                   return ListTile(
+      //                     title: Text(
+      //                         items[index].toString()), // Display each item
+      //                   );
+      //                 },
+      //               ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      body: items.isEmpty
+          ? Center(child: CircularProgressIndicator()) // Loading indicator
+          : ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(items[index].toString()), // Display each item
+                );
+              },
+            ),
     );
   }
 }

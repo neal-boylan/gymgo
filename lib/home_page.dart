@@ -2,18 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gymgo/add_new_class.dart';
+import 'package:gymgo/add_new_member.dart';
 import 'package:gymgo/login_page.dart';
-import 'package:gymgo/signin_class.dart';
-import 'package:gymgo/widgets/date_selector.dart';
-import 'package:gymgo/widgets/task_card.dart';
-import 'package:intl/intl.dart';
 
-import 'add_new_class.dart';
+import 'class_list.dart';
 
 class MyHomePage extends StatefulWidget {
-  // static route() => MaterialPageRoute(
-  //       builder: (context) => const MyHomePage(),
-  //     );
   const MyHomePage({super.key});
 
   @override
@@ -21,10 +16,73 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int pageIndex = 0;
+
+  final List<Widget> pages = [
+    const ClassList(),
+    const AddNewMember(),
+  ];
+
   DateTime selectedDate = DateTime.now();
+  DateTime currentDate = DateTime.now();
 
   Future<void> signOutUser() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  Future<void> queryValues() async {
+    print('queryVals');
+    List myList = [];
+    // getting all the documents from fb snapshot
+    final snapshot = await FirebaseFirestore.instance
+        .collection("classes")
+        .where('weekly', isEqualTo: true)
+        .where('startTime',
+            isLessThan: DateTime(
+                currentDate.year, currentDate.month, currentDate.day + 7))
+        .get();
+
+    // check if the collection is not empty before handling it
+    if (snapshot.docs.isNotEmpty) {
+      // add all items to myList
+      myList.addAll(snapshot.docs);
+    }
+
+    for (var gymClass in snapshot.docs) {
+      var setting = false;
+
+      print(gymClass.data().toString());
+
+      if (setting == true) {
+        try {
+          final data =
+              await FirebaseFirestore.instance.collection("classes").add({
+            "title": gymClass.data()['title'],
+            "coach": gymClass.data()['coach'],
+            "size": gymClass.data()['size'],
+            "startTime": DateTime(
+                gymClass.data()['startTime'].year,
+                gymClass.data()['startTime'].month,
+                gymClass.data()['startTime'].day + 7),
+            "endTime": DateTime(
+                gymClass.data()['endTime'].year,
+                gymClass.data()['endTime'].month,
+                gymClass.data()['endTime'].day + 7),
+            "weekly": gymClass.data()['title'],
+          });
+          print(data.id);
+        } catch (e) {
+          print(e);
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch user data from API using BuildContext
+    // queryValues();
   }
 
   @override
@@ -34,7 +92,8 @@ class _MyHomePageState extends State<MyHomePage> {
         foregroundColor: Colors.white,
         backgroundColor: Theme.of(context).colorScheme.primary,
         automaticallyImplyLeading: false,
-        title: const Text('Classes'),
+        title:
+            pageIndex == 0 ? const Text('Classes') : const Text('Add Member'),
         actions: [
           IconButton(
             onPressed: () async {
@@ -49,123 +108,75 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
+      body: pages[pageIndex],
+      floatingActionButton: pageIndex == 0
+          ? FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              child: Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddNewClass(),
+                  ),
+                );
+              },
+            )
+          : null,
+      bottomNavigationBar: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            DateSelector(
-              selectedDate: selectedDate,
-              onTap: (date) {
+            IconButton(
+              enableFeedback: false,
+              onPressed: () {
                 setState(() {
-                  selectedDate = DateTime(date.year, date.month, date.day);
+                  pageIndex = 0;
                 });
               },
-            ),
-            // FutureBuilder(
-            //   future: FirebaseFirestore.instance.collection("classes").get(),
-            StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection("classes")
-                  .where('startTime', isGreaterThanOrEqualTo: selectedDate)
-                  .where('startTime',
-                      isLessThan: DateTime(selectedDate.year,
-                          selectedDate.month, selectedDate.day + 1))
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                // if (!snapshot.hasData) {
-                if (snapshot.data!.docs.isEmpty) {
-                  return Center(child: const Text('No Classes Today'));
-                } else {
-                  return Expanded(
-                    child: ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        DateFormat _dateFormat = DateFormat('Hm');
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: TaskCard(
-                                color: Theme.of(context).colorScheme.primary,
-                                headerText:
-                                    snapshot.data!.docs[index].data()['title'],
-                                descriptionText:
-                                    snapshot.data!.docs[index].data()['coach'],
-                                startTime: _dateFormat
-                                    .format(snapshot.data!.docs[index]
-                                        .data()['startTime']
-                                        .toDate())
-                                    .toString(),
-                                endTime: _dateFormat
-                                    .format(snapshot.data!.docs[index]
-                                        .data()['endTime']
-                                        .toDate())
-                                    .toString(),
-                                uid: FirebaseAuth.instance.currentUser!.uid,
-                                onTap: () {
-                                  var docId = snapshot.data!.docs[index].id;
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SignInClass(
-                                        docId: docId,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            // Container(
-                            //   height: 50,
-                            //   width: 50,
-                            //   decoration: BoxDecoration(
-                            //     color: strengthenColor(
-                            //       const Color.fromRGBO(246, 222, 194, 1),
-                            //       0.69,
-                            //     ),
-                            //     shape: BoxShape.circle,
-                            //   ),
-                            // ),
-                            // const Padding(
-                            //   padding: EdgeInsets.all(12.0),
-                            //   child: Text(
-                            //     '10:00AM',
-                            //     style: TextStyle(
-                            //       fontSize: 17,
-                            //     ),
-                            //   ),
-                            // )
-                          ],
-                        );
-                      },
+              icon: pageIndex == 0
+                  ? const Icon(
+                      Icons.home_filled,
+                      color: Colors.white,
+                      size: 35,
+                    )
+                  : const Icon(
+                      Icons.home_outlined,
+                      color: Colors.white,
+                      size: 35,
                     ),
-                  );
-                }
+            ),
+            IconButton(
+              enableFeedback: false,
+              onPressed: () {
+                setState(() {
+                  pageIndex = 1;
+                });
               },
+              icon: pageIndex == 1
+                  ? const Icon(
+                      Icons.work_rounded,
+                      color: Colors.white,
+                      size: 35,
+                    )
+                  : const Icon(
+                      Icons.work_outline_outlined,
+                      color: Colors.white,
+                      size: 35,
+                    ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddNewClass(),
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: Theme.of(context).colorScheme.primary,
-        child: Container(height: 50.0),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

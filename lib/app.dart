@@ -20,6 +20,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'GymGo',
       theme: ThemeData(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.green,
