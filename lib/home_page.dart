@@ -17,6 +17,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int pageIndex = 0;
+  final String? userEmail = FirebaseAuth.instance.currentUser!.email;
+  final members = FirebaseFirestore.instance.collection("members");
 
   final List<Widget> pages = [
     const ClassList(),
@@ -163,12 +165,12 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               icon: pageIndex == 1
                   ? const Icon(
-                      Icons.work_rounded,
+                      Icons.person_add,
                       color: Colors.white,
                       size: 35,
                     )
                   : const Icon(
-                      Icons.work_outline_outlined,
+                      Icons.person_add_outlined,
                       color: Colors.white,
                       size: 35,
                     ),

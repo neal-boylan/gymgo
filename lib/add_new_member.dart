@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -24,27 +25,62 @@ class _AddNewMemberState extends State<AddNewMember> {
     super.dispose();
   }
 
+  void Validate(String email) {
+    bool isvalid = EmailValidator.validate(email);
+    print(isvalid);
+  }
+
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      final userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      addMemberToDb();
-      print(userCredential);
+      if (EmailValidator.validate(emailController.text.trim()) == true) {
+        final userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
+        addMemberToDb(userCredential.user?.uid);
+        print(userCredential.user?.email);
+        print(userCredential.user?.uid);
+
+        final snackBar = SnackBar(
+          content: const Text('Member added'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              // Some code to undo the change.
+            },
+          ),
+        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        final snackBar = SnackBar(
+          content: const Text('Member not added'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              // Some code to undo the change.
+            },
+          ),
+        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      }
     } on FirebaseAuthException catch (e) {
       print(e.message);
     }
   }
 
-  Future<void> addMemberToDb() async {
+  Future<void> addMemberToDb(String? userId) async {
     try {
-      final data = await FirebaseFirestore.instance.collection("users").add({
+      final data = await FirebaseFirestore.instance.collection("members").add({
         "email": emailController.text.trim(),
         "password": passwordController.text.trim(),
         "firstName": firstNameController.text.trim(),
         "lastName": lastNameController.text.trim(),
+        "userId": userId
       });
       print(data.id);
     } catch (e) {
@@ -61,21 +97,6 @@ class _AddNewMemberState extends State<AddNewMember> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  hintText: 'Password',
-                ),
-                maxLines: 1,
-              ),
-              const SizedBox(height: 10),
               TextField(
                 controller: firstNameController,
                 decoration: const InputDecoration(
@@ -88,6 +109,24 @@ class _AddNewMemberState extends State<AddNewMember> {
                 controller: lastNameController,
                 decoration: const InputDecoration(
                   hintText: 'Last Name',
+                ),
+                maxLines: 1,
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  hintText: 'Email',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                obscureText: true,
+                controller: passwordController,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  hintText: 'Password',
                 ),
                 maxLines: 1,
               ),
