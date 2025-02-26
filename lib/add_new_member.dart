@@ -75,14 +75,26 @@ class _AddNewMemberState extends State<AddNewMember> {
 
   Future<void> addMemberToDb(String? userId) async {
     try {
-      final data = await FirebaseFirestore.instance.collection("members").add({
+      // final data = await FirebaseFirestore.instance.collection("members").add({
+      //   "email": emailController.text.trim(),
+      //   "password": passwordController.text.trim(),
+      //   "firstName": firstNameController.text.trim(),
+      //   "lastName": lastNameController.text.trim(),
+      //   "userId": userId
+      // });
+
+      final data2 = await FirebaseFirestore.instance
+          .collection("members")
+          .doc(userId)
+          .set({
         "email": emailController.text.trim(),
         "password": passwordController.text.trim(),
         "firstName": firstNameController.text.trim(),
         "lastName": lastNameController.text.trim(),
         "userId": userId
       });
-      print(data.id);
+
+      // print(data.id);
     } catch (e) {
       print(e);
     }
