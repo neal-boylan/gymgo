@@ -20,7 +20,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final String? userId = FirebaseAuth.instance.currentUser!.uid;
   final String? userEmail = FirebaseAuth.instance.currentUser!.email;
   final members = FirebaseFirestore.instance.collection("members");
-  bool val = true;
+  bool _val = true;
 
   Future<bool> checkIfMember() async {
     // bool val = false;
@@ -32,11 +32,11 @@ class _MyHomePageState extends State<MyHomePage> {
     if (snap.docs.isNotEmpty) {
       DocumentSnapshot doc = snap.docs.first;
       print(doc['userId']);
-      val = true;
+      _val = true;
       return true; //like this you can access data
     } else {
       print("Doc doesn't exist");
-      val = false;
+      _val = false;
       return false;
     }
   }
@@ -105,7 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     // Fetch user data from API using BuildContext
-    checkIfMember();
+    checkIfMember().then((updatedVal) {
+      //The `then` is Triggered once the Future completes without errors
+      //And here I can update my var _counter.
+
+      //The setState method forces a rebuild of the Widget tree
+      //Which will update the view with the new value of `_counter`
+      setState(() {
+        _val = updatedVal;
+      });
+    });
+    ;
   }
 
   @override
@@ -146,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             )
           : null,
-      bottomNavigationBar: val
+      bottomNavigationBar: _val
           ? Container(
               height: 100,
               decoration: BoxDecoration(
@@ -240,12 +250,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     icon: pageIndex == 1
                         ? const Icon(
-                            Icons.sports_bar,
+                            Icons.sports_gymnastics,
                             color: Colors.white,
                             size: 35,
                           )
                         : const Icon(
-                            Icons.sports_bar_outlined,
+                            Icons.sports_gymnastics_outlined,
                             color: Colors.white,
                             size: 35,
                           ),
