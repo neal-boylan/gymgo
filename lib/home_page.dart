@@ -104,18 +104,16 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // Fetch user data from API using BuildContext
     checkIfMember().then((updatedVal) {
       //The `then` is Triggered once the Future completes without errors
-      //And here I can update my var _counter.
+      //And here I can update my var _val.
 
       //The setState method forces a rebuild of the Widget tree
-      //Which will update the view with the new value of `_counter`
+      //Which will update the view with the new value of `_val`
       setState(() {
         _val = updatedVal;
       });
     });
-    ;
   }
 
   @override
@@ -142,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: pages[pageIndex],
-      floatingActionButton: pageIndex == 0
+      floatingActionButton: _val
           ? FloatingActionButton(
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
               child: Icon(Icons.add),
@@ -250,12 +248,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     icon: pageIndex == 1
                         ? const Icon(
-                            Icons.sports_gymnastics,
+                            Icons.fitness_center,
                             color: Colors.white,
                             size: 35,
                           )
                         : const Icon(
-                            Icons.sports_gymnastics_outlined,
+                            Icons.fitness_center_outlined,
                             color: Colors.white,
                             size: 35,
                           ),
