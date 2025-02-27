@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/add_new_class.dart';
-import 'package:gymgo/add_new_member.dart';
-import 'package:gymgo/login_page.dart';
+import 'package:gymgo/pages/add_new_class.dart';
+import 'package:gymgo/pages/add_new_member.dart';
+import 'package:gymgo/pages/user_profile.dart';
 
 import 'class_list.dart';
+import 'login_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -44,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> pages = [
     const ClassList(),
     const AddNewMember(),
+    const UserProfile(),
   ];
 
   DateTime selectedDate = DateTime.now();
@@ -254,6 +256,25 @@ class _MyHomePageState extends State<MyHomePage> {
                           )
                         : const Icon(
                             Icons.fitness_center_outlined,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                  ),
+                  IconButton(
+                    enableFeedback: false,
+                    onPressed: () {
+                      setState(() {
+                        pageIndex = 2;
+                      });
+                    },
+                    icon: pageIndex == 2
+                        ? const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 35,
+                          )
+                        : const Icon(
+                            Icons.person_outlined,
                             color: Colors.white,
                             size: 35,
                           ),

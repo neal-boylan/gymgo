@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/signin_class.dart';
+import 'package:gymgo/pages/signin_class.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:gymgo/widgets/task_card.dart';
 import 'package:intl/intl.dart';
