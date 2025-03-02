@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/add_new_class.dart';
-import 'package:gymgo/pages/add_new_member.dart';
+import 'package:gymgo/pages/admin/add_new_member.dart';
 import 'package:gymgo/pages/user_profile.dart';
 
+import '../services/auth_service.dart';
+import 'admin/add_new_class.dart';
 import 'class_list.dart';
-import 'login_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -33,17 +33,26 @@ class _MyHomePageState extends State<MyHomePage> {
     if (snap.docs.isNotEmpty) {
       DocumentSnapshot doc = snap.docs.first;
       print(doc['userId']);
-      _val = true;
-      return true; //like this you can access data
+      // _val = true;
+      return true;
     } else {
       print("Doc doesn't exist");
-      _val = false;
+      // _val = false;
       return false;
     }
   }
 
   final List<Widget> pages = [
-    const ClassList(),
+    const ClassList(
+      val: false,
+    ),
+    const AddNewMember(),
+  ];
+
+  final List<Widget> memberPages = [
+    const ClassList(
+      val: true,
+    ),
     const AddNewMember(),
     const UserProfile(),
   ];
@@ -107,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     checkIfMember().then((updatedVal) {
+      print('updatedVal: $updatedVal');
       //The `then` is Triggered once the Future completes without errors
       //And here I can update my var _val.
 
@@ -130,10 +140,11 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             onPressed: () async {
-              await signOutUser();
-              if (!context.mounted) return;
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginPage()));
+              // await signOutUser();
+              // if (!context.mounted) return;
+              // Navigator.push(context,
+              //     MaterialPageRoute(builder: (context) => LoginPage()));
+              await AuthService().signout(context: context);
             },
             icon: const Icon(
               CupertinoIcons.arrow_uturn_left,
@@ -141,9 +152,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: pages[pageIndex],
+      body: _val ? memberPages[pageIndex] : pages[pageIndex],
       floatingActionButton: _val
-          ? FloatingActionButton(
+          ? null
+          : FloatingActionButton(
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
               child: Icon(Icons.add),
               onPressed: () {
@@ -154,63 +166,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               },
-            )
-          : null,
+            ),
       bottomNavigationBar: _val
           ? Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    enableFeedback: false,
-                    onPressed: () {
-                      setState(() {
-                        pageIndex = 0;
-                      });
-                    },
-                    icon: pageIndex == 0
-                        ? const Icon(
-                            Icons.home_filled,
-                            color: Colors.white,
-                            size: 35,
-                          )
-                        : const Icon(
-                            Icons.home_outlined,
-                            color: Colors.white,
-                            size: 35,
-                          ),
-                  ),
-                  IconButton(
-                    enableFeedback: false,
-                    onPressed: () {
-                      setState(() {
-                        pageIndex = 1;
-                      });
-                    },
-                    icon: pageIndex == 1
-                        ? const Icon(
-                            Icons.person_add,
-                            color: Colors.white,
-                            size: 35,
-                          )
-                        : const Icon(
-                            Icons.person_add_outlined,
-                            color: Colors.white,
-                            size: 35,
-                          ),
-                  ),
-                ],
-              ),
-            )
-          : Container(
               height: 100,
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
@@ -275,6 +233,59 @@ class _MyHomePageState extends State<MyHomePage> {
                           )
                         : const Icon(
                             Icons.person_outlined,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                  ),
+                ],
+              ),
+            )
+          : Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(
+                    enableFeedback: false,
+                    onPressed: () {
+                      setState(() {
+                        pageIndex = 0;
+                      });
+                    },
+                    icon: pageIndex == 0
+                        ? const Icon(
+                            Icons.home_filled,
+                            color: Colors.white,
+                            size: 35,
+                          )
+                        : const Icon(
+                            Icons.home_outlined,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                  ),
+                  IconButton(
+                    enableFeedback: false,
+                    onPressed: () {
+                      setState(() {
+                        pageIndex = 1;
+                      });
+                    },
+                    icon: pageIndex == 1
+                        ? const Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                            size: 35,
+                          )
+                        : const Icon(
+                            Icons.person_add_outlined,
                             color: Colors.white,
                             size: 35,
                           ),

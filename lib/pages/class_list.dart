@@ -1,14 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/signin_class.dart';
+import 'package:gymgo/pages/admin/view_class_signins.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:gymgo/widgets/task_card.dart';
 import 'package:intl/intl.dart';
 
-class ClassList extends StatefulWidget {
-  const ClassList({super.key});
+import 'member/signin_class.dart';
 
+class ClassList extends StatefulWidget {
+  final bool val;
+  const ClassList({super.key, required this.val});
   @override
   State<ClassList> createState() => _ClassListState();
 }
@@ -16,6 +18,12 @@ class ClassList extends StatefulWidget {
 class _ClassListState extends State<ClassList> {
   DateTime selectedDate = DateTime.now();
   DateTime currentDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    print('ClassList.val: ${widget.val}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +88,13 @@ class _ClassListState extends State<ClassList> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SignInClass(
-                                      docId: docId,
-                                    ),
+                                    builder: (context) => widget.val
+                                        ? SignInClass(
+                                            docId: docId,
+                                          )
+                                        : ViewClassSignins(
+                                            docId: docId,
+                                          ),
                                   ),
                                 );
                               },
