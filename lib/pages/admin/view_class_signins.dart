@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../widgets/task_card.dart';
+
 class ViewClassSignins extends StatefulWidget {
   final String docId;
   const ViewClassSignins({super.key, required this.docId});
@@ -13,6 +15,7 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
   final String docId;
   _ViewClassSigninsState(this.docId);
   List<dynamic> items = [];
+  List<dynamic> memberList = [];
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
         setState(() {
           items = List.from(doc['signins']); // Extract and store in state
         });
+        print('items: $items');
       }
     } catch (e) {
       print("Error fetching data: $e");
@@ -47,14 +51,64 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
       ),
       body: items.isEmpty
           ? Center(child: CircularProgressIndicator()) // Loading indicator
-          : ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(items[index].toString()), // Display each item
-                );
-              },
+          : Center(
+              child: Column(
+                children: [
+                  StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection("members")
+                        .where(FieldPath.documentId, whereIn: items)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.data!.docs.isEmpty) {
+                        return Center(child: const Text('No SignIns'));
+                      } else {
+                        return Expanded(
+                          child: ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    child: TaskCard(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      headerText: snapshot.data!.docs[index]
+                                          .data()['firstName'],
+                                      descriptionText: snapshot
+                                          .data!.docs[index]
+                                          .data()['lastName'],
+                                      startTime: "",
+                                      endTime: "",
+                                      uid: "",
+                                      onTap: () {},
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
+
+      // ListView.builder(
+      //         itemCount: items.length,
+      //         itemBuilder: (context, index) {
+      //           return ListTile(
+      //             title: Text(items[index].toString()), // Display each item
+      //           );
+      //         },
+      //       ),
     );
   }
 }
