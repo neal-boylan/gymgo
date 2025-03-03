@@ -27,6 +27,18 @@ class _SignInClassState extends State<SignInClass> {
     }
   }
 
+  Future<void> removeMemberClassFromDb() async {
+    try {
+      final String uid = FirebaseAuth.instance.currentUser!.uid;
+      print('uid: $uid');
+      FirebaseFirestore.instance.collection("classes").doc(docId).update({
+        'signins': FieldValue.arrayRemove([uid])
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +81,9 @@ class _SignInClassState extends State<SignInClass> {
                     backgroundColor: Theme.of(context).colorScheme.primary),
                 onPressed: () async {
                   await addMemberClassToDb();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
                 },
                 child: const Text(
                   'SIGN IN TO CLASS',
@@ -83,7 +98,10 @@ class _SignInClassState extends State<SignInClass> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary),
                 onPressed: () async {
-                  await addMemberClassToDb();
+                  await removeMemberClassFromDb();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
                 },
                 child: const Text(
                   'CANCEL BOOKING',
