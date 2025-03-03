@@ -8,6 +8,7 @@ import 'package:gymgo/pages/user_profile.dart';
 import '../services/auth_service.dart';
 import 'admin/add_new_class.dart';
 import 'class_list.dart';
+import 'member/add_new_workout.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -53,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const ClassList(
       val: true,
     ),
-    const AddNewMember(),
+    const AddNewWorkout(),
     const UserProfile(),
   ];
 
@@ -191,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? const Icon(
                             Icons.home_filled,
                             color: Colors.white,
-                            size: 35,
+                            size: 50,
                           )
                         : const Icon(
                             Icons.home_outlined,
@@ -210,7 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? const Icon(
                             Icons.fitness_center,
                             color: Colors.white,
-                            size: 35,
+                            size: 50,
                           )
                         : const Icon(
                             Icons.fitness_center_outlined,
@@ -229,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? const Icon(
                             Icons.person,
                             color: Colors.white,
-                            size: 35,
+                            size: 50,
                           )
                         : const Icon(
                             Icons.person_outlined,
