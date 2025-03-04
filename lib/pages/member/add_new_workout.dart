@@ -14,6 +14,10 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
   final setsController = TextEditingController();
   final repsController = TextEditingController();
   final weightController = TextEditingController();
+  List<String> exercises = [];
+  List<int> sets = [];
+  List<int> reps = [];
+  List<double> weight = [];
 
   @override
   void dispose() {
@@ -46,13 +50,44 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
     }
   }
 
+  Future<void> addExercise(String ex, int s, int r, double w) async {
+    try {
+      // exercises.add(ex);
+      // sets.add(s);
+      // reps.add(r);
+      // weight.add(w);
+      setState(() {
+        exercises = [...exercises, ex];
+        sets = [...sets, s];
+        reps = [...reps, r];
+        weight = [...weight, w];
+      });
+      print('exercises: $ex, $s, $r, $w');
+      final snackBar = SnackBar(
+        content: const Text('Exercise added'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        ),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+    }
+  }
+
   Future<void> addWorkoutToDb(String? userId) async {
     try {
-      await FirebaseFirestore.instance.collection("workouts").doc(userId).set({
-        "exercise": exerciseController.text.trim(),
-        "sets": setsController.text.trim(),
-        "reps": repsController.text.trim(),
-        "weight": weightController.text.trim(),
+      final String userId = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance.collection("workouts").add({
+        "exercise": exercises,
+        "sets": sets,
+        "reps": reps,
+        "weight": weight,
         "userId": userId
       });
     } catch (e) {
@@ -62,85 +97,100 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              TextField(
-                controller: exerciseController,
-                decoration: const InputDecoration(
-                  hintText: 'Exercise',
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            TextField(
+              controller: exerciseController,
+              decoration: const InputDecoration(
+                hintText: 'Exercise',
+              ),
+              maxLines: 1,
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: setsController,
+                    decoration: const InputDecoration(
+                      hintText: 'Sets',
+                    ),
+                    maxLines: 1,
+                  ),
                 ),
-                maxLines: 1,
+                const SizedBox(height: 10),
+                Expanded(
+                  child: TextFormField(
+                    controller: repsController,
+                    decoration: const InputDecoration(
+                      hintText: 'Reps',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: TextFormField(
+                    controller: weightController,
+                    decoration: const InputDecoration(
+                      hintText: 'Weight',
+                    ),
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary),
+              onPressed: () async {
+                await addExercise(
+                  exerciseController.text,
+                  int.parse(setsController.text),
+                  int.parse(repsController.text),
+                  double.parse(weightController.text),
+                );
+              },
+              child: const Text(
+                'ADD EXERCISE',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
               ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: setsController,
-                      decoration: const InputDecoration(
-                        hintText: 'Sets',
-                      ),
-                      maxLines: 1,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: repsController,
-                      decoration: const InputDecoration(
-                        hintText: 'Reps',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: weightController,
-                      decoration: const InputDecoration(
-                        hintText: 'Weight',
-                      ),
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                onPressed: () async {
-                  await createWorkout();
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: exercises.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    // title: Text(exercises![index].toString()),
+                    title: Text(exercises[index]),
+                  );
                 },
-                child: const Text(
-                  'ADD EXERCISE',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary),
+              onPressed: () async {
+                await createWorkout();
+              },
+              child: const Text(
+                'ADD WORKOUT',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                onPressed: () async {
-                  await createWorkout();
-                },
-                child: const Text(
-                  'ADD WORKOUT',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
+          ],
         ),
       ),
     );
