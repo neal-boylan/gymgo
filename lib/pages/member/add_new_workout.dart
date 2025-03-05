@@ -170,7 +170,8 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     // title: Text(exercises![index].toString()),
-                    title: Text(exercises[index]),
+                    title: Text(
+                        '${exercises[index]} ${sets[index]} x ${reps[index]} ${weight[index]}kg'),
                   );
                 },
               ),
