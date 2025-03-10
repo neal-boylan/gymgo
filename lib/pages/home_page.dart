@@ -18,27 +18,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  DateTime selectedDate = DateTime.now();
+  DateTime currentDate = DateTime.now();
   int pageIndex = 0;
   final String? userId = FirebaseAuth.instance.currentUser!.uid;
-  final String? userEmail = FirebaseAuth.instance.currentUser!.email;
+  // final String? userEmail = FirebaseAuth.instance.currentUser!.email;
   final members = FirebaseFirestore.instance.collection("members");
   bool _val = true;
 
   Future<bool> checkIfMember() async {
-    // bool val = false;
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection('members')
         .where("userId", isEqualTo: userId)
         .get();
 
     if (snap.docs.isNotEmpty) {
-      DocumentSnapshot doc = snap.docs.first;
-      print(doc['userId']);
-      // _val = true;
       return true;
     } else {
-      print("Doc doesn't exist");
-      // _val = false;
       return false;
     }
   }
@@ -57,9 +53,6 @@ class _MyHomePageState extends State<MyHomePage> {
     const WorkoutList(),
     const UserProfile(),
   ];
-
-  DateTime selectedDate = DateTime.now();
-  DateTime currentDate = DateTime.now();
 
   Future<void> signOutUser() async {
     await FirebaseAuth.instance.signOut();
@@ -117,12 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     checkIfMember().then((updatedVal) {
-      print('updatedVal: $updatedVal');
-      //The `then` is Triggered once the Future completes without errors
-      //And here I can update my var _val.
-
-      //The setState method forces a rebuild of the Widget tree
-      //Which will update the view with the new value of `_val`
       setState(() {
         _val = updatedVal;
       });

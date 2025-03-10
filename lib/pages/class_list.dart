@@ -38,8 +38,6 @@ class _ClassListState extends State<ClassList> {
               });
             },
           ),
-          // FutureBuilder(
-          //   future: FirebaseFirestore.instance.collection("classes").get(),
           StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("classes")

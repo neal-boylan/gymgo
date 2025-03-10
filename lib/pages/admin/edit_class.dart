@@ -4,18 +4,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class AddNewClass extends StatefulWidget {
-  const AddNewClass({super.key});
+class EditClass extends StatefulWidget {
+  final String docId;
+  const EditClass({super.key, required this.docId});
 
   @override
-  State<AddNewClass> createState() => _AddNewClassState();
+  State<EditClass> createState() => _EditClassState(docId);
 }
 
-class _AddNewClassState extends State<AddNewClass> {
+class _EditClassState extends State<EditClass> {
+  final String docId;
+  _EditClassState(this.docId);
+
   final titleController = TextEditingController();
   final coachController = TextEditingController();
   final sizeController = TextEditingController();
-  List<String> signIns = [];
   DateTime startDateTime = DateTime.now();
   DateTime endDateTime = DateTime.now();
   DateTime selectedDate = DateTime.now();
@@ -49,18 +52,19 @@ class _AddNewClassState extends State<AddNewClass> {
             TimeOfDay(hour: endDateTime.hour, minute: endDateTime.minute),
       );
 
-  Future<void> uploadClassToDb() async {
+  Future<void> editClassInDb() async {
     try {
-      final data = await FirebaseFirestore.instance.collection("classes").add({
-        "title": titleController.text.trim(),
-        "coach": coachController.text.trim(),
-        "size": sizeController.text.trim(),
-        "startTime": startDateTime,
-        "endTime": endDateTime,
-        "weekly": weekly,
-        "signins": signIns,
+      final data = await FirebaseFirestore.instance
+          .collection("classes")
+          .doc(docId)
+          .update({
+        'coach': coachController,
+        'endTime': endDateTime,
+        'size': sizeController,
+        'startTime': startDateTime,
+        'title': titleController.text.trim(),
       });
-      print(data.id);
+      print('update: $docId');
     } catch (e) {
       print(e);
     }
@@ -75,7 +79,7 @@ class _AddNewClassState extends State<AddNewClass> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Class'),
+        title: const Text('Edit Class'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
@@ -300,10 +304,10 @@ class _AddNewClassState extends State<AddNewClass> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary),
                 onPressed: () async {
-                  await uploadClassToDb();
+                  await editClassInDb();
                 },
                 child: const Text(
-                  'SUBMIT',
+                  'SAVE CHANGES',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,

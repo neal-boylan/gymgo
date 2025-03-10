@@ -21,9 +21,7 @@ class AuthService {
               builder: (BuildContext context) => const MyHomePage()));
     } on FirebaseAuthException catch (e) {
       String message = '';
-      if (e.code == 'weak-password') {
-        message = 'The password provided is too weak.';
-      } else if (e.code == 'email-already-in-use') {
+      if (e.code == 'email-already-in-use') {
         message = 'An account already exists with that email.';
       }
       Fluttertoast.showToast(

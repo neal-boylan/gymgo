@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gymgo/pages/admin/edit_class.dart';
 
 import '../../widgets/task_card.dart';
 
@@ -49,12 +50,12 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
         title: const Text('Class Signins'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: items.isEmpty
-          ? Center(child: CircularProgressIndicator()) // Loading indicator
-          : Center(
-              child: Column(
-                children: [
-                  StreamBuilder(
+      body: Center(
+        child: Column(
+          children: [
+            items.isEmpty
+                ? Center(child: const Text('No SignIns')) // Loading indicator
+                : StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection("members")
                         .where(FieldPath.documentId, whereIn: items)
@@ -97,9 +98,40 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
                       }
                     },
                   ),
-                ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 50.0,
+                ),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditClass(docId: docId),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'EDIT CLASS',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
+          ],
+        ),
+      ),
 
       // ListView.builder(
       //         itemCount: items.length,
