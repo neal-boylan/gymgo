@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gymgo/pages/home_page.dart';
 
 class AddNewWorkout extends StatefulWidget {
   const AddNewWorkout({super.key});
@@ -97,101 +98,130 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            TextField(
-              controller: exerciseController,
-              decoration: const InputDecoration(
-                hintText: 'Exercise',
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add New Workout'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Column(
+            children: [
+              // const SizedBox(height: 10),
+              TextField(
+                controller: exerciseController,
+                decoration: const InputDecoration(
+                  hintText: 'Exercise',
+                ),
+                maxLines: 1,
               ),
-              maxLines: 1,
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: setsController,
-                    decoration: const InputDecoration(
-                      hintText: 'Sets',
-                    ),
-                    maxLines: 1,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: TextFormField(
-                    controller: repsController,
-                    decoration: const InputDecoration(
-                      hintText: 'Reps',
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: setsController,
+                      decoration: const InputDecoration(
+                        hintText: 'Sets',
+                      ),
+                      maxLines: 1,
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: TextFormField(
-                    controller: weightController,
-                    decoration: const InputDecoration(
-                      hintText: 'Weight',
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: TextFormField(
+                      controller: repsController,
+                      decoration: const InputDecoration(
+                        hintText: 'Reps',
+                      ),
                     ),
-                    maxLines: 1,
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary),
-              onPressed: () async {
-                await addExercise(
-                  exerciseController.text,
-                  int.parse(setsController.text),
-                  int.parse(repsController.text),
-                  double.parse(weightController.text),
-                );
-              },
-              child: const Text(
-                'ADD EXERCISE',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: TextFormField(
+                      controller: weightController,
+                      decoration: const InputDecoration(
+                        hintText: 'Weight',
+                      ),
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: exercises.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    // title: Text(exercises![index].toString()),
-                    title: Text(
-                        '${exercises[index]} ${sets[index]} x ${reps[index]} ${weight[index]}kg'),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary),
+                onPressed: () async {
+                  await addExercise(
+                    exerciseController.text,
+                    int.parse(setsController.text),
+                    int.parse(repsController.text),
+                    double.parse(weightController.text),
                   );
+                  exerciseController.clear();
+                  setsController.clear();
+                  repsController.clear();
+                  weightController.clear();
                 },
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary),
-              onPressed: () async {
-                await createWorkout();
-              },
-              child: const Text(
-                'ADD WORKOUT',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
+                child: const Text(
+                  'ADD EXERCISE',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-          ],
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: exercises.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      // title: Text(exercises![index].toString()),
+                      title: Text(
+                          '${exercises[index]} ${sets[index]} x ${reps[index]} ${weight[index]}kg'),
+                    );
+                  },
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10,
+                    right: 10,
+                    bottom: 50.0,
+                  ),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary),
+                      onPressed: () {
+                        createWorkout();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyHomePage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'ADD WORKOUT',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );

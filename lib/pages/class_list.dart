@@ -60,7 +60,7 @@ class _ClassListState extends State<ClassList> {
                   child: ListView.builder(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      DateFormat _dateFormat = DateFormat('Hm');
+                      DateFormat dateFormat = DateFormat('Hm');
                       return Row(
                         children: [
                           Expanded(
@@ -70,12 +70,12 @@ class _ClassListState extends State<ClassList> {
                                   snapshot.data!.docs[index].data()['title'],
                               descriptionText:
                                   snapshot.data!.docs[index].data()['coach'],
-                              startTime: _dateFormat
+                              startTime: dateFormat
                                   .format(snapshot.data!.docs[index]
                                       .data()['startTime']
                                       .toDate())
                                   .toString(),
-                              endTime: _dateFormat
+                              endTime: dateFormat
                                   .format(snapshot.data!.docs[index]
                                       .data()['endTime']
                                       .toDate())

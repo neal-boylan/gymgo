@@ -32,7 +32,7 @@ class AuthService {
         textColor: Colors.white,
         fontSize: 14.0,
       );
-    } catch (e) {}
+    }
   }
 
   Future<void> signin(
@@ -69,7 +69,7 @@ class AuthService {
         textColor: Colors.white,
         fontSize: 14.0,
       );
-    } catch (e) {}
+    }
   }
 
   Future<void> signout({required BuildContext context}) async {
