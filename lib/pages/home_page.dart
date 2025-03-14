@@ -59,15 +59,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> queryValues() async {
-    print('queryVals');
     List myList = [];
+
+    // define how far into the future weekly classes will be created
+    Timestamp originalTimestamp = Timestamp.now();
+    DateTime dateTime = originalTimestamp.toDate();
+    DateTime newDateTime = dateTime.add(Duration(days: 14));
+    Timestamp newTimestamp = Timestamp.fromDate(newDateTime);
+
     // getting all the documents from fb snapshot
     final snapshot = await FirebaseFirestore.instance
         .collection("classes")
         .where('weekly', isEqualTo: true)
-        .where('startTime',
-            isLessThan: DateTime(
-                currentDate.year, currentDate.month, currentDate.day + 7))
+        // .where('startTime',
+        //     isLessThan: DateTime(
+        //         currentDate.year, currentDate.month, currentDate.day + 7))
         .get();
 
     // check if the collection is not empty before handling it
@@ -77,28 +83,36 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     for (var gymClass in snapshot.docs) {
-      var setting = false;
+      Timestamp startTimestamp = gymClass.data()['startTime'];
+      DateTime startDateTime = startTimestamp.toDate();
+      DateTime newStartDateTime = startDateTime.add(Duration(days: 7));
+      Timestamp newStartTimestamp = Timestamp.fromDate(newStartDateTime);
 
-      print(gymClass.data().toString());
+      Timestamp endTimestamp = gymClass.data()['endTime'];
+      DateTime endDateTime = endTimestamp.toDate();
+      DateTime newEndDateTime = endDateTime.add(Duration(days: 7));
+      Timestamp newEndTimestamp = Timestamp.fromDate(newEndDateTime);
 
-      if (setting == true) {
+      print('startDateTime: $startDateTime');
+      print('newDateTime: $newDateTime');
+      if (!newStartDateTime.isAfter(newDateTime)) {
         try {
-          final data =
-              await FirebaseFirestore.instance.collection("classes").add({
-            "title": gymClass.data()['title'],
-            "coach": gymClass.data()['coach'],
-            "size": gymClass.data()['size'],
-            "startTime": DateTime(
-                gymClass.data()['startTime'].year,
-                gymClass.data()['startTime'].month,
-                gymClass.data()['startTime'].day + 7),
-            "endTime": DateTime(
-                gymClass.data()['endTime'].year,
-                gymClass.data()['endTime'].month,
-                gymClass.data()['endTime'].day + 7),
-            "weekly": gymClass.data()['title'],
-          });
-          print(data.id);
+          final check = await FirebaseFirestore.instance
+              .collection("classes")
+              .where('startTime', isEqualTo: newStartTimestamp)
+              .get();
+
+          if (check.docs.isEmpty) {
+            await FirebaseFirestore.instance.collection("classes").add({
+              "title": gymClass.data()['title'],
+              "coach": gymClass.data()['coach'],
+              "size": gymClass.data()['size'],
+              "startTime": newStartTimestamp,
+              "endTime": newEndTimestamp,
+              "signins": [],
+              "weekly": gymClass.data()['weekly'],
+            });
+          }
         } catch (e) {
           print(e);
         }
@@ -114,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _val = updatedVal;
       });
     });
+    queryValues();
   }
 
   @override
