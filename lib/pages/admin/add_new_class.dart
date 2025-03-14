@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gymgo/pages/home_page.dart';
 
 class AddNewClass extends StatefulWidget {
   const AddNewClass({super.key});
@@ -54,13 +55,25 @@ class _AddNewClassState extends State<AddNewClass> {
       final data = await FirebaseFirestore.instance.collection("classes").add({
         "title": titleController.text.trim(),
         "coach": coachController.text.trim(),
-        "size": sizeController.text.trim(),
+        "size": int.parse(sizeController.text.trim()),
         "startTime": startDateTime,
         "endTime": endDateTime,
         "weekly": weekly,
         "signins": signIns,
       });
-      print(data.id);
+
+      final snackBar = SnackBar(
+        content: const Text('Class added'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        ),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     } catch (e) {
       print(e);
     }
@@ -238,13 +251,6 @@ class _AddNewClassState extends State<AddNewClass> {
                         setState(
                           () {
                             startDateTime = newDateTime;
-                            // endDateTime = DateTime(
-                            //   startDateTime.year,
-                            //   startDateTime.month,
-                            //   startDateTime.day,
-                            //   time.hour + 1,
-                            //   time.minute,
-                            // );
                             endDateTime =
                                 startDateTime.add(const Duration(hours: 1));
                           },
@@ -301,6 +307,17 @@ class _AddNewClassState extends State<AddNewClass> {
                     backgroundColor: Theme.of(context).colorScheme.primary),
                 onPressed: () async {
                   await uploadClassToDb();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyHomePage(),
+                      ),
+                    );
+                  }
                 },
                 child: const Text(
                   'SUBMIT',

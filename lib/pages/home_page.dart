@@ -61,19 +61,20 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> queryValues() async {
     List myList = [];
 
+    // define how far into the past to search for weekly classes
     // define how far into the future weekly classes will be created
-    Timestamp originalTimestamp = Timestamp.now();
-    DateTime dateTime = originalTimestamp.toDate();
-    DateTime newDateTime = dateTime.add(Duration(days: 14));
-    Timestamp newTimestamp = Timestamp.fromDate(newDateTime);
+    Timestamp nowTimestamp = Timestamp.now();
+    DateTime nowDateTime = nowTimestamp.toDate();
+    DateTime pastDateTime = nowDateTime.add(Duration(days: -7));
+    Timestamp pastTimestamp = Timestamp.fromDate(pastDateTime);
+    DateTime futureDateTime = nowDateTime.add(Duration(days: 14));
+    Timestamp futureTimestamp = Timestamp.fromDate(futureDateTime);
 
     // getting all the documents from fb snapshot
     final snapshot = await FirebaseFirestore.instance
         .collection("classes")
         .where('weekly', isEqualTo: true)
-        // .where('startTime',
-        //     isLessThan: DateTime(
-        //         currentDate.year, currentDate.month, currentDate.day + 7))
+        .where('startTime', isGreaterThanOrEqualTo: pastTimestamp)
         .get();
 
     // check if the collection is not empty before handling it
@@ -93,9 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
       DateTime newEndDateTime = endDateTime.add(Duration(days: 7));
       Timestamp newEndTimestamp = Timestamp.fromDate(newEndDateTime);
 
-      print('startDateTime: $startDateTime');
-      print('newDateTime: $newDateTime');
-      if (!newStartDateTime.isAfter(newDateTime)) {
+      while (!newStartDateTime.isAfter(futureDateTime)) {
         try {
           final check = await FirebaseFirestore.instance
               .collection("classes")
@@ -113,6 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
               "weekly": gymClass.data()['weekly'],
             });
           }
+          newStartDateTime = newStartDateTime.add(Duration(days: 7));
+          newStartTimestamp = Timestamp.fromDate(newStartDateTime);
         } catch (e) {
           print(e);
         }
