@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/admin/view_class_signins.dart';
 import 'package:gymgo/widgets/date_selector.dart';
-import 'package:gymgo/widgets/task_card.dart';
 import 'package:intl/intl.dart';
 
+import '../widgets/class_card.dart';
 import 'member/signin_class.dart';
 
 class ClassList extends StatefulWidget {
@@ -64,12 +64,10 @@ class _ClassListState extends State<ClassList> {
                       return Row(
                         children: [
                           Expanded(
-                            child: TaskCard(
+                            child: ClassCard(
                               color: Theme.of(context).colorScheme.primary,
-                              headerText:
-                                  snapshot.data!.docs[index].data()['title'],
-                              descriptionText:
-                                  snapshot.data!.docs[index].data()['coach'],
+                              title: snapshot.data!.docs[index].data()['title'],
+                              coach: snapshot.data!.docs[index].data()['coach'],
                               startTime: dateFormat
                                   .format(snapshot.data!.docs[index]
                                       .data()['startTime']
@@ -80,6 +78,10 @@ class _ClassListState extends State<ClassList> {
                                       .data()['endTime']
                                       .toDate())
                                   .toString(),
+                              signins: snapshot.data!.docs[index]
+                                  .data()['signins']
+                                  .length,
+                              size: snapshot.data!.docs[index].data()['size'],
                               uid: FirebaseAuth.instance.currentUser!.uid,
                               onTap: () {
                                 var docId = snapshot.data!.docs[index].id;

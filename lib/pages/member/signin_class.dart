@@ -12,13 +12,13 @@ class SignInClass extends StatefulWidget {
 
 class _SignInClassState extends State<SignInClass> {
   final String docId;
+  final String uid = FirebaseAuth.instance.currentUser!.uid;
   _SignInClassState(this.docId);
-  List<dynamic> items = [];
+  List<dynamic> signedIn = [];
+  int size = 10;
 
   Future<void> addMemberClassToDb() async {
     try {
-      final String uid = FirebaseAuth.instance.currentUser!.uid;
-      print('uid: $uid');
       FirebaseFirestore.instance.collection("classes").doc(docId).update({
         'signins': FieldValue.arrayUnion([uid])
       });
@@ -54,8 +54,13 @@ class _SignInClassState extends State<SignInClass> {
           .get();
 
       if (doc.exists) {
+        print('doc exists');
         setState(() {
-          items = List.from(doc['signins']); // Extract and store in state
+          signedIn = List.from(doc['signins']); // Extract and store in state
+          size = doc['size'];
+
+          print('signedIn.length: ${signedIn.length}');
+          print('size: ${size}');
         });
       }
     } catch (e) {
@@ -70,51 +75,60 @@ class _SignInClassState extends State<SignInClass> {
         title: const Text('Sign In To Class'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                onPressed: () async {
-                  await addMemberClassToDb();
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text(
-                  'SIGN IN TO CLASS',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+      body: signedIn.length < size
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    !signedIn.contains(uid)
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary),
+                            onPressed: () async {
+                              await addMemberClassToDb();
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text(
+                              'SIGN IN TO CLASS',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary),
+                            onPressed: () async {
+                              await removeMemberClassFromDb();
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text(
+                              'CANCEL BOOKING',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                onPressed: () async {
-                  await removeMemberClassFromDb();
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text(
-                  'CANCEL BOOKING',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
-                ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Center(
+                child: const Text('Class is full'),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

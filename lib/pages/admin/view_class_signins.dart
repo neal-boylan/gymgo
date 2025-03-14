@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/admin/edit_class.dart';
 
-import '../../widgets/task_card.dart';
+import '../../widgets/class_card.dart';
 
 class ViewClassSignins extends StatefulWidget {
   final String docId;
@@ -76,16 +76,17 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
                               return Row(
                                 children: [
                                   Expanded(
-                                    child: TaskCard(
+                                    child: ClassCard(
                                       color:
                                           Theme.of(context).colorScheme.primary,
-                                      headerText: snapshot.data!.docs[index]
+                                      title: snapshot.data!.docs[index]
                                           .data()['firstName'],
-                                      descriptionText: snapshot
-                                          .data!.docs[index]
+                                      coach: snapshot.data!.docs[index]
                                           .data()['lastName'],
                                       startTime: "",
                                       endTime: "",
+                                      signins: 0,
+                                      size: 0,
                                       uid: "",
                                       onTap: () {},
                                     ),

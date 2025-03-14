@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/member/add_new_workout.dart';
 import 'package:gymgo/pages/member/view_workout.dart';
-import 'package:gymgo/widgets/task_card.dart';
+
+import '../../widgets/class_card.dart';
 
 class WorkoutList extends StatefulWidget {
   const WorkoutList({super.key});
@@ -56,13 +57,15 @@ class _WorkoutListState extends State<WorkoutList> {
                         return Row(
                           children: [
                             Expanded(
-                              child: TaskCard(
+                              child: ClassCard(
                                 color: Theme.of(context).colorScheme.primary,
-                                headerText: snapshot.data!.docs[index].id,
-                                descriptionText:
+                                title: snapshot.data!.docs[index].id,
+                                coach:
                                     snapshot.data!.docs[index].data()['userId'],
                                 startTime: "",
                                 endTime: "",
+                                signins: 0,
+                                size: 0,
                                 uid: FirebaseAuth.instance.currentUser!.uid,
                                 onTap: () {
                                   var docId = snapshot.data!.docs[index].id;

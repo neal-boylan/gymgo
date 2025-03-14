@@ -1,6 +1,6 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/widgets/task_card.dart';
+import 'package:gymgo/widgets/class_card.dart';
 
 import 'pages/admin/add_new_class.dart';
 
@@ -25,17 +25,19 @@ class HomeScreen extends StatelessWidget {
                   return Row(
                     children: [
                       const Expanded(
-                        child: TaskCard(
+                        child: ClassCard(
                           color: Color.fromRGBO(
                             246,
                             222,
                             194,
                             1,
                           ),
-                          headerText: 'Strength',
-                          descriptionText: 'Dave',
+                          title: 'Strength',
+                          coach: 'Dave',
                           startTime: '',
                           endTime: '',
+                          signins: 0,
+                          size: 0,
                           uid: '',
                         ),
                       ),
