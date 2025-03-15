@@ -87,37 +87,6 @@ class _EditClassState extends State<EditClass> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              // UNCOMMENT THIS in Firebase Storage section!
-
-              // GestureDetector(
-              //   onTap: () async {
-              //     final image = await selectImage();
-              //     setState(() {
-              //       file = image;
-              //     });
-              //   },
-              //   child: DottedBorder(
-              //     borderType: BorderType.RRect,
-              //     radius: const Radius.circular(10),
-              //     dashPattern: const [10, 4],
-              //     strokeCap: StrokeCap.round,
-              //     child: Container(
-              //       width: double.infinity,
-              //       height: 150,
-              //       decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(10),
-              //       ),
-              //       child: file != null
-              //           ? Image.file(file!)
-              //           : const Center(
-              //               child: Icon(
-              //                 Icons.camera_alt_outlined,
-              //                 size: 40,
-              //               ),
-              //             ),
-              //     ),
-              //   ),
-              // ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: titleController,
@@ -204,7 +173,6 @@ class _EditClassState extends State<EditClass> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -258,7 +226,6 @@ class _EditClassState extends State<EditClass> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 10),
               Row(
                 children: [

@@ -75,60 +75,124 @@ class _SignInClassState extends State<SignInClass> {
         title: const Text('Sign In To Class'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: signedIn.length < size
+      // body: signedIn.length < size
+      //     ? SingleChildScrollView(
+      //         child: Padding(
+      //           padding: const EdgeInsets.all(20.0),
+      //           child: Column(
+      //             children: [
+      //               const SizedBox(height: 10),
+      //               !signedIn.contains(uid)
+      //                   ? ElevatedButton(
+      //                       style: ElevatedButton.styleFrom(
+      //                           backgroundColor:
+      //                               Theme.of(context).colorScheme.primary),
+      //                       onPressed: () async {
+      //                         await addMemberClassToDb();
+      //                         if (context.mounted) {
+      //                           Navigator.pop(context);
+      //                         }
+      //                       },
+      //                       child: const Text(
+      //                         'SIGN IN TO CLASS',
+      //                         style: TextStyle(
+      //                           fontSize: 16,
+      //                           color: Colors.white,
+      //                         ),
+      //                       ),
+      //                     )
+      //                   : ElevatedButton(
+      //                       style: ElevatedButton.styleFrom(
+      //                           backgroundColor:
+      //                               Theme.of(context).colorScheme.primary),
+      //                       onPressed: () async {
+      //                         await removeMemberClassFromDb();
+      //                         if (context.mounted) {
+      //                           Navigator.pop(context);
+      //                         }
+      //                       },
+      //                       child: const Text(
+      //                         'CANCEL BOOKING',
+      //                         style: TextStyle(
+      //                           fontSize: 16,
+      //                           color: Colors.white,
+      //                         ),
+      //                       ),
+      //                     ),
+      //             ],
+      //           ),
+      //         ),
+      //       )
+      //     : Padding(
+      //         padding: const EdgeInsets.all(20.0),
+      //         child: Center(
+      //           child: const Text('Class is full'),
+      //         ),
+      //       ),
+      body: signedIn.contains(uid) // signedIn.length < size
           ? SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
                     const SizedBox(height: 10),
-                    !signedIn.contains(uid)
-                        ? ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary),
-                            onPressed: () async {
-                              await addMemberClassToDb();
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: const Text(
-                              'SIGN IN TO CLASS',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                          )
-                        : ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary),
-                            onPressed: () async {
-                              await removeMemberClassFromDb();
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: const Text(
-                              'CANCEL BOOKING',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary),
+                      onPressed: () async {
+                        await removeMemberClassFromDb();
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text(
+                        'CANCEL BOOKING',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Center(
-                child: const Text('Class is full'),
-              ),
-            ),
+          : signedIn.length < size
+              ? SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary),
+                          onPressed: () async {
+                            await addMemberClassToDb();
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: const Text(
+                            'SIGN IN TO CLASS',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Center(
+                    child: const Text('Class is full'),
+                  ),
+                ),
     );
   }
 }

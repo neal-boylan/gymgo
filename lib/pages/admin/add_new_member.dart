@@ -39,8 +39,6 @@ class _AddNewMemberState extends State<AddNewMember> {
           password: passwordController.text.trim(),
         );
         addMemberToDb(userCredential.user?.uid);
-        print(userCredential.user?.email);
-        print(userCredential.user?.uid);
 
         final snackBar = SnackBar(
           content: const Text('Member added'),

@@ -157,14 +157,14 @@ class _UserProfileState extends State<UserProfile> {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Annuler'),
+                                child: const Text('Cancel'),
                               ),
                               TextButton(
                                 onPressed: () {
                                   changePassword(_oldPasswordController.text,
                                       _newPasswordController.text);
                                 },
-                                child: const Text('Changer'),
+                                child: const Text('Change'),
                               ),
                             ],
                           );
