@@ -24,11 +24,25 @@ class _MyHomePageState extends State<MyHomePage> {
   final String? userId = FirebaseAuth.instance.currentUser!.uid;
   // final String? userEmail = FirebaseAuth.instance.currentUser!.email;
   final members = FirebaseFirestore.instance.collection("members");
-  bool _val = true;
+  bool _member = true;
+  bool _coach = true;
 
   Future<bool> checkIfMember() async {
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection('members')
+        .where("userId", isEqualTo: userId)
+        .get();
+
+    if (snap.docs.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> checkIfCoach() async {
+    QuerySnapshot snap = await FirebaseFirestore.instance
+        .collection('coaches')
         .where("userId", isEqualTo: userId)
         .get();
 
@@ -126,9 +140,16 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     checkIfMember().then((updatedVal) {
       setState(() {
-        _val = updatedVal;
+        _member = updatedVal;
       });
     });
+
+    checkIfCoach().then((updatedVal) {
+      setState(() {
+        _coach = updatedVal;
+      });
+    });
+
     queryValues();
   }
 
@@ -156,22 +177,24 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: _val ? memberPages[pageIndex] : pages[pageIndex],
-      floatingActionButton: _val
+      body: _member ? memberPages[pageIndex] : pages[pageIndex],
+      floatingActionButton: _member || _coach
           ? null
-          : FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              child: Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddNewClass(),
-                  ),
-                );
-              },
-            ),
-      bottomNavigationBar: _val
+          : pageIndex == 0
+              ? FloatingActionButton(
+                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                  child: Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddNewClass(),
+                      ),
+                    );
+                  },
+                )
+              : null,
+      bottomNavigationBar: _member
           ? Container(
               height: 100,
               decoration: BoxDecoration(
@@ -244,59 +267,113 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             )
-          : Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+          : _coach
+              ? Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                        enableFeedback: false,
+                        onPressed: () {
+                          setState(() {
+                            pageIndex = 0;
+                          });
+                        },
+                        icon: pageIndex == 0
+                            ? const Icon(
+                                Icons.home_filled,
+                                color: Colors.white,
+                                size: 35,
+                              )
+                            : const Icon(
+                                Icons.home_outlined,
+                                color: Colors.white,
+                                size: 35,
+                              ),
+                      ),
+                      IconButton(
+                        enableFeedback: false,
+                        onPressed: () {
+                          setState(() {
+                            pageIndex = 1;
+                          });
+                        },
+                        icon: pageIndex == 1
+                            ? const Icon(
+                                Icons.people,
+                                color: Colors.white,
+                                size: 35,
+                              )
+                            : const Icon(
+                                Icons.people_outline,
+                                color: Colors.white,
+                                size: 35,
+                              ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                        enableFeedback: false,
+                        onPressed: () {
+                          setState(() {
+                            pageIndex = 0;
+                          });
+                        },
+                        icon: pageIndex == 0
+                            ? const Icon(
+                                Icons.home_filled,
+                                color: Colors.white,
+                                size: 35,
+                              )
+                            : const Icon(
+                                Icons.home_outlined,
+                                color: Colors.white,
+                                size: 35,
+                              ),
+                      ),
+                      IconButton(
+                        enableFeedback: false,
+                        onPressed: () {
+                          setState(() {
+                            pageIndex = 1;
+                          });
+                        },
+                        icon: pageIndex == 1
+                            ? const Icon(
+                                Icons.person_add,
+                                color: Colors.white,
+                                size: 35,
+                              )
+                            : const Icon(
+                                Icons.person_add_outlined,
+                                color: Colors.white,
+                                size: 35,
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    enableFeedback: false,
-                    onPressed: () {
-                      setState(() {
-                        pageIndex = 0;
-                      });
-                    },
-                    icon: pageIndex == 0
-                        ? const Icon(
-                            Icons.home_filled,
-                            color: Colors.white,
-                            size: 35,
-                          )
-                        : const Icon(
-                            Icons.home_outlined,
-                            color: Colors.white,
-                            size: 35,
-                          ),
-                  ),
-                  IconButton(
-                    enableFeedback: false,
-                    onPressed: () {
-                      setState(() {
-                        pageIndex = 1;
-                      });
-                    },
-                    icon: pageIndex == 1
-                        ? const Icon(
-                            Icons.person_add,
-                            color: Colors.white,
-                            size: 35,
-                          )
-                        : const Icon(
-                            Icons.person_add_outlined,
-                            color: Colors.white,
-                            size: 35,
-                          ),
-                  ),
-                ],
-              ),
-            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

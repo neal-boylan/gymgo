@@ -122,7 +122,7 @@ class SignUpPage extends StatelessWidget {
   Widget _signup(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xff0D6EFD),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
@@ -135,7 +135,13 @@ class SignUpPage extends StatelessWidget {
             password: _passwordController.text,
             context: context);
       },
-      child: const Text("Sign Up"),
+      child: const Text(
+        "SIGN UP",
+        style: TextStyle(
+          fontSize: 20,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 

@@ -15,6 +15,7 @@ class _AddNewMemberState extends State<AddNewMember> {
   final passwordController = TextEditingController();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
+  bool coach = false;
 
   @override
   void dispose() {
@@ -81,16 +82,23 @@ class _AddNewMemberState extends State<AddNewMember> {
       //   "userId": userId
       // });
 
-      final data2 = await FirebaseFirestore.instance
-          .collection("members")
-          .doc(userId)
-          .set({
-        "email": emailController.text.trim(),
-        "password": passwordController.text.trim(),
-        "firstName": firstNameController.text.trim(),
-        "lastName": lastNameController.text.trim(),
-        "userId": userId
-      });
+      if (coach) {
+        await FirebaseFirestore.instance.collection("coaches").doc(userId).set({
+          "email": emailController.text.trim(),
+          "password": passwordController.text.trim(),
+          "firstName": firstNameController.text.trim(),
+          "lastName": lastNameController.text.trim(),
+          "userId": userId
+        });
+      } else {
+        await FirebaseFirestore.instance.collection("members").doc(userId).set({
+          "email": emailController.text.trim(),
+          "password": passwordController.text.trim(),
+          "firstName": firstNameController.text.trim(),
+          "lastName": lastNameController.text.trim(),
+          "userId": userId
+        });
+      }
 
       // print(data.id);
     } catch (e) {
@@ -140,7 +148,24 @@ class _AddNewMemberState extends State<AddNewMember> {
                 ),
                 maxLines: 1,
               ),
-              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Assign Coaching privelages?',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Checkbox(
+                    value: coach,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        coach = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary),
