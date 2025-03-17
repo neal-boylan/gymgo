@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,9 +13,18 @@ class AddNewClass extends StatefulWidget {
   State<AddNewClass> createState() => _AddNewClassState();
 }
 
+typedef MenuEntry = DropdownMenuEntry<String>;
+const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
+
 class _AddNewClassState extends State<AddNewClass> {
   final titleController = TextEditingController();
   final coachController = TextEditingController();
+
+  static final List<MenuEntry> menuEntries = UnmodifiableListView<MenuEntry>(
+    list.map<MenuEntry>((String name) => MenuEntry(value: name, label: name)),
+  );
+  String dropdownValue = list.first;
+
   final sizeController = TextEditingController();
   List<String> signIns = [];
   DateTime startDateTime = DateTime.now();
@@ -54,7 +64,7 @@ class _AddNewClassState extends State<AddNewClass> {
     try {
       final data = await FirebaseFirestore.instance.collection("classes").add({
         "title": titleController.text.trim(),
-        "coach": coachController.text.trim(),
+        "coach": dropdownValue,
         "size": int.parse(sizeController.text.trim()),
         "startTime": startDateTime,
         "endTime": endDateTime,
@@ -141,6 +151,18 @@ class _AddNewClassState extends State<AddNewClass> {
                   hintText: 'Coach',
                 ),
                 maxLines: 1,
+              ),
+              const SizedBox(height: 10),
+              DropdownMenu<String>(
+                expandedInsets: EdgeInsets.zero,
+                initialSelection: list.first,
+                onSelected: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    dropdownValue = value!;
+                  });
+                },
+                dropdownMenuEntries: menuEntries,
               ),
               const SizedBox(height: 10),
               TextField(
