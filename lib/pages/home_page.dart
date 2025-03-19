@@ -187,7 +187,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: _member ? memberPages[pageIndex] : pages[pageIndex],
+      body: _member
+          ? memberPages[pageIndex]
+          : _coach
+              ? coachPages[pageIndex]
+              : pages[pageIndex],
       floatingActionButton: _member || _coach
           ? null
           : pageIndex == 0
