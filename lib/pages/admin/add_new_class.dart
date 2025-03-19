@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,16 +16,57 @@ typedef MenuEntry = DropdownMenuEntry<String>;
 const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
 
 class _AddNewClassState extends State<AddNewClass> {
+  List<String> dropdownItems = [];
+  String? selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDropdownValues();
+  }
+
+  // Function to fetch Firestore values
+  Future<void> fetchDropdownValues() async {
+    List<String> values = await getFieldValues("coaches", "firstName");
+    setState(() {
+      dropdownItems = values;
+      if (dropdownItems.isNotEmpty) {
+        selectedValue = dropdownItems.first; // Set default selected value
+      }
+    });
+  }
+
+  // Function to get field values from Firestore
+  Future<List<String>> getFieldValues(
+      String collectionName, String fieldName) async {
+    List<String> fieldValues = [];
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection(collectionName).get();
+      for (var doc in querySnapshot.docs) {
+        if (doc.data() is Map<String, dynamic> &&
+            (doc.data() as Map<String, dynamic>).containsKey(fieldName)) {
+          fieldValues
+              .add(doc[fieldName].toString()); // Convert to string if needed
+        }
+      }
+    } catch (e) {
+      print("Error fetching field values: $e");
+    }
+    return fieldValues;
+  }
+
   final titleController = TextEditingController();
   final coachController = TextEditingController();
 
-  static final List<MenuEntry> menuEntries = UnmodifiableListView<MenuEntry>(
-    list.map<MenuEntry>((String name) => MenuEntry(value: name, label: name)),
-  );
-  String dropdownValue = list.first;
+  // static final List<MenuEntry> menuEntries = UnmodifiableListView<MenuEntry>(
+  //   list.map<MenuEntry>((String name) => MenuEntry(value: name, label: name)),
+  // );
+  // String dropdownValue = list.first;
 
   final sizeController = TextEditingController();
   List<String> signIns = [];
+  List<dynamic> coachList = [];
   DateTime startDateTime = DateTime.now();
   DateTime endDateTime = DateTime.now();
   DateTime selectedDate = DateTime.now();
@@ -64,7 +104,7 @@ class _AddNewClassState extends State<AddNewClass> {
     try {
       final data = await FirebaseFirestore.instance.collection("classes").add({
         "title": titleController.text.trim(),
-        "coach": dropdownValue,
+        "coach": selectedValue,
         "size": int.parse(sizeController.text.trim()),
         "startTime": startDateTime,
         "endTime": endDateTime,
@@ -145,25 +185,25 @@ class _AddNewClassState extends State<AddNewClass> {
                 ),
               ),
               const SizedBox(height: 10),
-              TextFormField(
-                controller: coachController,
-                decoration: const InputDecoration(
-                  hintText: 'Coach',
-                ),
-                maxLines: 1,
-              ),
-              const SizedBox(height: 10),
-              DropdownMenu<String>(
-                expandedInsets: EdgeInsets.zero,
-                initialSelection: list.first,
-                onSelected: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    dropdownValue = value!;
-                  });
-                },
-                dropdownMenuEntries: menuEntries,
-              ),
+              dropdownItems.isEmpty
+                  ? CircularProgressIndicator() // Show loading indicator
+                  : DropdownMenu<String>(
+                      expandedInsets: EdgeInsets.zero,
+                      initialSelection: dropdownItems.first,
+                      onSelected: (String? value) {
+                        // This is called when the user selects an item.
+                        setState(() {
+                          selectedValue = value!;
+                        });
+                      },
+                      dropdownMenuEntries: dropdownItems.map((String value) {
+                        return DropdownMenuEntry<String>(
+                          value: value,
+                          label: value,
+                        );
+                      }).toList(),
+                    ),
+
               const SizedBox(height: 10),
               TextField(
                 inputFormatters: [

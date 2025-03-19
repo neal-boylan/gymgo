@@ -9,8 +9,9 @@ import '../widgets/class_card.dart';
 import 'member/signin_class.dart';
 
 class ClassList extends StatefulWidget {
-  final bool val;
-  const ClassList({super.key, required this.val});
+  final bool member;
+  final bool coach;
+  const ClassList({super.key, required this.member, required this.coach});
   @override
   State<ClassList> createState() => _ClassListState();
 }
@@ -22,7 +23,6 @@ class _ClassListState extends State<ClassList> {
   @override
   void initState() {
     super.initState();
-    print('ClassList.val: ${widget.val}');
   }
 
   @override
@@ -39,13 +39,24 @@ class _ClassListState extends State<ClassList> {
             },
           ),
           StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection("classes")
-                .where('startTime', isGreaterThanOrEqualTo: selectedDate)
-                .where('startTime',
-                    isLessThan: DateTime(selectedDate.year, selectedDate.month,
-                        selectedDate.day + 1))
-                .snapshots(),
+            stream: widget.coach
+                ? FirebaseFirestore.instance
+                    .collection("classes")
+                    .where('startTime', isGreaterThanOrEqualTo: selectedDate)
+                    .where('startTime',
+                        isLessThan: DateTime(selectedDate.year,
+                            selectedDate.month, selectedDate.day + 1))
+                    .where('coach',
+                        isEqualTo:
+                            FirebaseAuth.instance.currentUser!.uid.toString())
+                    .snapshots()
+                : FirebaseFirestore.instance
+                    .collection("classes")
+                    .where('startTime', isGreaterThanOrEqualTo: selectedDate)
+                    .where('startTime',
+                        isLessThan: DateTime(selectedDate.year,
+                            selectedDate.month, selectedDate.day + 1))
+                    .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -88,7 +99,7 @@ class _ClassListState extends State<ClassList> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => widget.val
+                                    builder: (context) => widget.member
                                         ? SignInClass(
                                             docId: docId,
                                           )

@@ -53,10 +53,6 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
 
   Future<void> addExercise(String ex, int s, int r, double w) async {
     try {
-      // exercises.add(ex);
-      // sets.add(s);
-      // reps.add(r);
-      // weight.add(w);
       setState(() {
         exercises = [...exercises, ex];
         sets = [...sets, s];

@@ -55,14 +55,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> pages = [
     const ClassList(
-      val: false,
+      member: false,
+      coach: false,
     ),
     const AddNewMember(),
   ];
 
+  final List<Widget> coachPages = [
+    const ClassList(
+      member: false,
+      coach: true,
+    ),
+    const UserProfile(),
+  ];
+
   final List<Widget> memberPages = [
     const ClassList(
-      val: true,
+      member: true,
+      coach: false,
     ),
     const WorkoutList(),
     const UserProfile(),
