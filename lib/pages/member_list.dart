@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/home_page.dart';
+import 'package:gymgo/pages/view_profile.dart';
 import 'package:intl/intl.dart';
 
 import '../widgets/member_card.dart';
@@ -27,8 +27,10 @@ class _MemberListState extends State<MemberList> {
       child: Column(
         children: [
           StreamBuilder(
-            stream:
-                FirebaseFirestore.instance.collection("members").snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection("members")
+                .orderBy("firstName")
+                .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -58,7 +60,8 @@ class _MemberListState extends State<MemberList> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => MyHomePage(),
+                                    builder: (context) =>
+                                        ViewProfile(docId: docId),
                                   ),
                                 );
                               },
