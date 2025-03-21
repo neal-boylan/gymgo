@@ -15,11 +15,13 @@ class _ViewProfileState extends State<ViewProfile> {
   var firstName = "";
   var lastName = "";
   var email = "";
+  var workouts = 0;
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    countWorkouts();
   }
 
   Future<void> fetchData() async {
@@ -41,6 +43,23 @@ class _ViewProfileState extends State<ViewProfile> {
     }
   }
 
+  Future<int> countWorkouts() async {
+    // Get reference to the collection
+    CollectionReference collection =
+        FirebaseFirestore.instance.collection('workouts');
+
+    // Query to find documents where the field matches the value
+    QuerySnapshot querySnapshot =
+        await collection.where('userId', isEqualTo: docId).get();
+
+    setState(() {
+      workouts = querySnapshot.docs.length;
+    });
+
+    // Return the number of documents
+    return querySnapshot.docs.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +71,7 @@ class _ViewProfileState extends State<ViewProfile> {
         children: [
           Center(
             child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 50),
                 Container(
@@ -93,7 +113,108 @@ class _ViewProfileState extends State<ViewProfile> {
                   "Phone Number",
                   style: TextStyle(fontSize: 24),
                 ),
+                SizedBox(height: 50),
+
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //   children: [
+                //     ElevatedButton(
+                //       onPressed: () {},
+                //       style: ElevatedButton.styleFrom(
+                //         shape: CircleBorder(), // Makes it circular
+                //         padding: EdgeInsets.all(20), // Adjusts size
+                //       ),
+                //       child: Icon(Icons.play_arrow), // You can use text too
+                //     ),
+                //     ElevatedButton(
+                //       onPressed: () {},
+                //       style: ElevatedButton.styleFrom(
+                //         shape: CircleBorder(), // Makes it circular
+                //         padding: EdgeInsets.all(20), // Adjusts size
+                //       ),
+                //       child: Icon(Icons.play_arrow), // You can use text too
+                //     )
+                //   ],
+                // )
               ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding:
+                  EdgeInsetsDirectional.only(bottom: 150, start: 20, end: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        shape: CircleBorder(),
+                        padding:
+                            EdgeInsets.all(30), // Increase padding for size
+                        minimumSize: Size(160, 160),
+                        backgroundColor:
+                            Theme.of(context).colorScheme.onPrimary,
+                      ),
+                      child: Column(
+                        mainAxisSize:
+                            MainAxisSize.min, // Fit text inside button
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Classes",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "55",
+                            style: TextStyle(
+                              fontSize: 36,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        shape: CircleBorder(),
+                        padding:
+                            EdgeInsets.all(30), // Increase padding for size
+                        minimumSize: Size(160, 160),
+                        backgroundColor:
+                            Theme.of(context).colorScheme.onPrimary,
+                      ),
+                      child: Column(
+                        mainAxisSize:
+                            MainAxisSize.min, // Fit text inside button
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Workouts",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            workouts.toString(),
+                            style: TextStyle(
+                              fontSize: 36,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Align(
