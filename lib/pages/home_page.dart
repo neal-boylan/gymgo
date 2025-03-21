@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/admin/add_new_member.dart';
+import 'package:gymgo/pages/member_list.dart';
 import 'package:gymgo/pages/user_profile.dart';
 
 import '../services/auth_service.dart';
@@ -22,7 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime currentDate = DateTime.now();
   int pageIndex = 0;
   final String? userId = FirebaseAuth.instance.currentUser!.uid;
-  // final String? userEmail = FirebaseAuth.instance.currentUser!.email;
+  final String? userEmail = FirebaseAuth.instance.currentUser!.email;
   final members = FirebaseFirestore.instance.collection("members");
   bool _member = true;
   bool _coach = true;
@@ -58,6 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
       member: false,
       coach: false,
     ),
+    const MemberList(),
     const AddNewMember(),
   ];
 
@@ -66,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
       member: false,
       coach: true,
     ),
+    const MemberList(),
     const UserProfile(),
   ];
 
@@ -163,6 +166,43 @@ class _MyHomePageState extends State<MyHomePage> {
     queryValues();
   }
 
+  String _getAppBarTitle(int page) {
+    if (_member) {
+      switch (page) {
+        case 0:
+          return "Home, member\n$userEmail";
+        case 1:
+          return "Workouts, member\n$userEmail";
+        case 2:
+          return "Profile, member\n$userEmail";
+        default:
+          return "Flutter App, member\n$userEmail";
+      }
+    } else if (_coach) {
+      switch (page) {
+        case 0:
+          return "Home, coach\n$userEmail";
+        case 1:
+          return "Member List, coach\n$userEmail";
+        case 2:
+          return "Profile, coach\n$userEmail";
+        default:
+          return "Flutter App, coach\n$userEmail";
+      }
+    } else {
+      switch (page) {
+        case 0:
+          return "Home, admin\n$userEmail";
+        case 1:
+          return "Add New Member, admin\n$userEmail";
+        case 2:
+          return "Member List, admin\n$userEmail";
+        default:
+          return "Flutter App, admin\n$userEmail";
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,8 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
         foregroundColor: Colors.white,
         backgroundColor: Theme.of(context).colorScheme.primary,
         automaticallyImplyLeading: false,
-        title:
-            pageIndex == 0 ? const Text('Classes') : const Text('Add Member'),
+        title: Text(_getAppBarTitle(pageIndex)),
         actions: [
           IconButton(
             onPressed: () async {
@@ -332,6 +371,25 @@ class _MyHomePageState extends State<MyHomePage> {
                                 size: 35,
                               ),
                       ),
+                      IconButton(
+                        enableFeedback: false,
+                        onPressed: () {
+                          setState(() {
+                            pageIndex = 2;
+                          });
+                        },
+                        icon: pageIndex == 2
+                            ? const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 35,
+                              )
+                            : const Icon(
+                                Icons.person_outlined,
+                                color: Colors.white,
+                                size: 35,
+                              ),
+                      ),
                     ],
                   ),
                 )
@@ -381,6 +439,25 @@ class _MyHomePageState extends State<MyHomePage> {
                               )
                             : const Icon(
                                 Icons.person_add_outlined,
+                                color: Colors.white,
+                                size: 35,
+                              ),
+                      ),
+                      IconButton(
+                        enableFeedback: false,
+                        onPressed: () {
+                          setState(() {
+                            pageIndex = 2;
+                          });
+                        },
+                        icon: pageIndex == 2
+                            ? const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 35,
+                              )
+                            : const Icon(
+                                Icons.person_outlined,
                                 color: Colors.white,
                                 size: 35,
                               ),
