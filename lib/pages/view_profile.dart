@@ -54,13 +54,29 @@ class _ViewProfileState extends State<ViewProfile> {
             child: Column(
               children: [
                 SizedBox(height: 50),
-                CircleAvatar(
-                  radius: 80, // Adjust size
-                  backgroundImage: NetworkImage(
-                      'https://via.placeholder.com/150'), // Image URL
-                  backgroundColor: Colors.grey[300], // Placeholder color
-                  child: Icon(Icons.person,
-                      size: 50, color: Colors.white), // Placeholder icon
+                Container(
+                  width: 160, // Diameter
+                  height: 160,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    // image: DecorationImage(
+                    //   image: NetworkImage('https://via.placeholder.com/150'),
+                    //   fit: BoxFit.cover, // Ensures image fills the circle
+                    // ),
+                    color: Theme.of(context)
+                        .primaryColor, // Background color if no image
+                  ),
+                  child: Center(
+                    child: firstName == ""
+                        ? null
+                        : Text(
+                            "${firstName.substring(0, 1)}${lastName.substring(0, 1)}",
+                            style: TextStyle(
+                              fontSize: 48,
+                              color: Colors.black,
+                            ),
+                          ),
+                  ),
                 ),
                 SizedBox(height: 20),
                 Text(

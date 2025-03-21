@@ -109,6 +109,10 @@ class _AddNewMemberState extends State<AddNewMember> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Add New Member'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),

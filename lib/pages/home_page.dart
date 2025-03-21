@@ -194,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
         case 0:
           return "Home, admin\n$userEmail";
         case 1:
-          return "Add New Member, admin\n$userEmail";
+          return "Member List, admin\n$userEmail";
         case 2:
           return "Member List, admin\n$userEmail";
         default:
@@ -246,7 +246,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   },
                 )
-              : null,
+              : pageIndex == 1
+                  ? FloatingActionButton.large(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.inversePrimary,
+                      child: Icon(Icons.person_add),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AddNewMember(),
+                          ),
+                        );
+                      },
+                    )
+                  : null,
       bottomNavigationBar: _member
           ? Container(
               height: 100,
@@ -433,12 +447,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                         icon: pageIndex == 1
                             ? const Icon(
-                                Icons.person_add,
+                                Icons.people,
                                 color: Colors.white,
                                 size: 35,
                               )
                             : const Icon(
-                                Icons.person_add_outlined,
+                                Icons.people_outlined,
                                 color: Colors.white,
                                 size: 35,
                               ),
@@ -465,7 +479,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
