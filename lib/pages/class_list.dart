@@ -17,7 +17,8 @@ class ClassList extends StatefulWidget {
 }
 
 class _ClassListState extends State<ClassList> {
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   DateTime currentDate = DateTime.now();
 
   @override

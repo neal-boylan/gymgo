@@ -19,7 +19,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  DateTime selectedDate = DateTime.now();
+  // DateTime selectedDate = DateTime.now();
+  DateTime selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   DateTime currentDate = DateTime.now();
   int pageIndex = 0;
   final String? userId = FirebaseAuth.instance.currentUser!.uid;
@@ -285,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? const Icon(
                             Icons.home_filled,
                             color: Colors.white,
-                            size: 50,
+                            size: 60,
                           )
                         : const Icon(
                             Icons.home_outlined,
@@ -304,7 +306,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? const Icon(
                             Icons.fitness_center,
                             color: Colors.white,
-                            size: 50,
+                            size: 60,
                           )
                         : const Icon(
                             Icons.fitness_center_outlined,
@@ -323,7 +325,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? const Icon(
                             Icons.person,
                             color: Colors.white,
-                            size: 50,
+                            size: 60,
                           )
                         : const Icon(
                             Icons.person_outlined,
@@ -358,7 +360,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? const Icon(
                                 Icons.home_filled,
                                 color: Colors.white,
-                                size: 35,
+                                size: 60,
                               )
                             : const Icon(
                                 Icons.home_outlined,
@@ -377,7 +379,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? const Icon(
                                 Icons.people,
                                 color: Colors.white,
-                                size: 35,
+                                size: 60,
                               )
                             : const Icon(
                                 Icons.people_outline,
@@ -396,7 +398,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? const Icon(
                                 Icons.person,
                                 color: Colors.white,
-                                size: 35,
+                                size: 60,
                               )
                             : const Icon(
                                 Icons.person_outlined,
@@ -430,7 +432,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? const Icon(
                                 Icons.home_filled,
                                 color: Colors.white,
-                                size: 35,
+                                size: 60,
                               )
                             : const Icon(
                                 Icons.home_outlined,
@@ -449,7 +451,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? const Icon(
                                 Icons.people,
                                 color: Colors.white,
-                                size: 35,
+                                size: 60,
                               )
                             : const Icon(
                                 Icons.people_outlined,
@@ -468,7 +470,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? const Icon(
                                 Icons.person,
                                 color: Colors.white,
-                                size: 35,
+                                size: 60,
                               )
                             : const Icon(
                                 Icons.person_outlined,
