@@ -16,11 +16,13 @@ class _ViewProfileState extends State<ViewProfile> {
   var lastName = "";
   var email = "";
   var workouts = 0;
+  var classes = 0;
 
   @override
   void initState() {
     super.initState();
     fetchData();
+    countClasses();
     countWorkouts();
   }
 
@@ -44,11 +46,9 @@ class _ViewProfileState extends State<ViewProfile> {
   }
 
   Future<int> countWorkouts() async {
-    // Get reference to the collection
     CollectionReference collection =
         FirebaseFirestore.instance.collection('workouts');
 
-    // Query to find documents where the field matches the value
     QuerySnapshot querySnapshot =
         await collection.where('userId', isEqualTo: docId).get();
 
@@ -56,7 +56,20 @@ class _ViewProfileState extends State<ViewProfile> {
       workouts = querySnapshot.docs.length;
     });
 
-    // Return the number of documents
+    return querySnapshot.docs.length;
+  }
+
+  Future<int> countClasses() async {
+    CollectionReference collection =
+        FirebaseFirestore.instance.collection('classes');
+
+    QuerySnapshot querySnapshot =
+        await collection.where('signins', arrayContains: docId).get();
+
+    setState(() {
+      classes = querySnapshot.docs.length;
+    });
+
     return querySnapshot.docs.length;
   }
 
@@ -171,7 +184,7 @@ class _ViewProfileState extends State<ViewProfile> {
                             ),
                           ),
                           Text(
-                            "55",
+                            classes.toString(),
                             style: TextStyle(
                               fontSize: 36,
                             ),
