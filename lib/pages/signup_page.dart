@@ -29,12 +29,13 @@ class SignUpPage extends StatelessWidget {
               children: [
                 Center(
                   child: Text(
-                    'Register Account',
+                    'Register your gym on GymGo!',
                     style: GoogleFonts.raleway(
                         textStyle: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 32)),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 const SizedBox(
@@ -75,7 +76,7 @@ class SignUpPage extends StatelessWidget {
           controller: _emailController,
           decoration: InputDecoration(
               filled: true,
-              hintText: 'mahdiforwork@gmail.com',
+              hintText: 'email@gmail.com',
               hintStyle: const TextStyle(
                   color: Color(0xff6A6A6A),
                   fontWeight: FontWeight.normal,

@@ -47,6 +47,7 @@ dependencies:
   google_fonts: ^6.2.1
   email_validator: ^2.1.17
   fluttertoast: ^8.2.5
+  dropdown_search: ^6.0.2
 
 dev_dependencies:
   flutter_test:
