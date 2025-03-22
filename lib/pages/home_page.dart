@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/admin/add_new_member.dart';
+import 'package:gymgo/pages/edit_member_profile.dart';
 import 'package:gymgo/pages/member_list.dart';
-import 'package:gymgo/pages/user_profile.dart';
+import 'package:gymgo/pages/view_member_profile.dart';
 
 import '../services/auth_service.dart';
 import 'admin/add_new_class.dart';
@@ -24,7 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   DateTime currentDate = DateTime.now();
   int pageIndex = 0;
-  final String? userId = FirebaseAuth.instance.currentUser!.uid;
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
   final String? userEmail = FirebaseAuth.instance.currentUser!.email;
   final members = FirebaseFirestore.instance.collection("members");
   bool _member = true;
@@ -61,7 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
       member: false,
       coach: false,
     ),
-    const MemberList(),
+    const MemberList(
+      coach: false,
+      member: false,
+    ),
     const AddNewMember(),
   ];
 
@@ -70,8 +74,11 @@ class _MyHomePageState extends State<MyHomePage> {
       member: false,
       coach: true,
     ),
-    const MemberList(),
-    const UserProfile(),
+    const MemberList(
+      coach: true,
+      member: false,
+    ),
+    const EditMemberProfile(),
   ];
 
   final List<Widget> memberPages = [
@@ -80,7 +87,11 @@ class _MyHomePageState extends State<MyHomePage> {
       coach: false,
     ),
     const WorkoutList(),
-    const UserProfile(),
+    ViewMemberProfile(
+      docId: FirebaseAuth.instance.currentUser!.uid,
+      coach: false,
+      member: true,
+    ),
   ];
 
   Future<void> signOutUser() async {

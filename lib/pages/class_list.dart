@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:gymgo/pages/admin/view_class_signins.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:intl/intl.dart';
@@ -60,13 +61,26 @@ class _ClassListState extends State<ClassList> {
                     .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
+                return Expanded(
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 );
               }
               // if (!snapshot.hasData) {
               if (snapshot.data!.docs.isEmpty) {
-                return Center(child: const Text('No Classes Today'));
+                return Expanded(
+                  child: Center(
+                      child: Text(
+                    'No Classes Today',
+                    style: GoogleFonts.raleway(
+                        textStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 32)),
+                    textAlign: TextAlign.center,
+                  )),
+                );
               } else {
                 return Expanded(
                   child: ListView.builder(
