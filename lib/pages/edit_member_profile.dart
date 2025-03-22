@@ -14,6 +14,7 @@ class EditMemberProfile extends StatefulWidget {
 
 class _EditMemberProfileState extends State<EditMemberProfile> {
   final String userId = FirebaseAuth.instance.currentUser!.uid;
+  bool _isButtonVisible = false;
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -34,6 +35,17 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
   void initState() {
     super.initState();
     fetchData();
+    firstNameController.addListener(() {
+      setState(() {
+        _isButtonVisible = firstNameController.text.isNotEmpty;
+      });
+    });
+
+    lastNameController.addListener(() {
+      setState(() {
+        _isButtonVisible = lastNameController.text.isNotEmpty;
+      });
+    });
   }
 
   Future<void> fetchData() async {
@@ -118,14 +130,6 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
                   maxLines: 1,
                 ),
                 const SizedBox(height: 10),
-                TextFormField(
-                  initialValue: firstName.toString(),
-                  decoration: InputDecoration(
-                    // labelText: "First Name",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -145,20 +149,24 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
                 const SizedBox(height: 20),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary),
-                    onPressed: () async {
-                      firstNameController.text.trim() != firstName ||
-                              lastNameController.text.trim() != lastName
-                          ? updateDb(userId)
-                          : null;
-                    },
-                    child: const Text(
-                      'UPDATE PROFILE',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
+                  child: Visibility(
+                    visible: _isButtonVisible,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary),
+                      onPressed: () async {
+                        firstNameController.text.trim() != firstName ||
+                                lastNameController.text.trim() != lastName
+                            ? updateDb(userId)
+                            : null;
+                      },
+                      child: const Text(
+                        'UPDATE PROFILE',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
