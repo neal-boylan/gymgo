@@ -48,9 +48,9 @@ class _ClassListState extends State<ClassList> {
                     .where('startTime',
                         isLessThan: DateTime(selectedDate.year,
                             selectedDate.month, selectedDate.day + 1))
-                    .where('coach',
+                    .where('coachId',
                         isEqualTo:
-                            'June') //FirebaseAuth.instance.currentUser!.uid.toString())
+                            FirebaseAuth.instance.currentUser!.uid.toString())
                     .snapshots()
                 : FirebaseFirestore.instance
                     .collection("classes")
