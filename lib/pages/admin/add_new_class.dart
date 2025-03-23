@@ -16,22 +16,53 @@ typedef MenuEntry = DropdownMenuEntry<String>;
 const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
 
 class _AddNewClassState extends State<AddNewClass> {
-  List<String> dropdownItems = [];
+  List<String> coachList = [];
+
+  List<Map<String, dynamic>> coachDocList = [];
+  List<String> coachNameList = [];
+  List<String> coachIdList = [];
+
   String? selectedValue;
 
   @override
   void initState() {
     super.initState();
     fetchDropdownValues();
+    fetchCoachDocuments();
+  }
+
+  Future<void> fetchCoachDocuments() async {
+    List<String> nameValues = [];
+    List<String> idValues = [];
+
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('coaches').get();
+
+    for (var doc in querySnapshot.docs) {
+      if (doc.data() is Map<String, dynamic> &&
+          (doc.data() as Map<String, dynamic>).containsKey('firstName')) {
+        nameValues.add(doc['firstName'].toString());
+        idValues.add(doc.id.toString());
+      }
+    }
+
+    setState(() {
+      coachDocList = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      coachNameList = nameValues;
+      coachIdList = idValues;
+    });
   }
 
   // Function to fetch Firestore values
   Future<void> fetchDropdownValues() async {
     List<String> values = await getFieldValues("coaches", "firstName");
     setState(() {
-      dropdownItems = values;
-      if (dropdownItems.isNotEmpty) {
-        selectedValue = dropdownItems.first; // Set default selected value
+      coachList = values;
+      if (coachList.isNotEmpty) {
+        selectedValue = coachList.first; // Set default selected value
       }
     });
   }
@@ -66,7 +97,7 @@ class _AddNewClassState extends State<AddNewClass> {
 
   final sizeController = TextEditingController();
   List<String> signIns = [];
-  List<dynamic> coachList = [];
+  // List<dynamic> coachList = [];
   DateTime startDateTime = DateTime.now();
   DateTime endDateTime = DateTime.now();
   DateTime selectedDate = DateTime.now();
@@ -102,9 +133,13 @@ class _AddNewClassState extends State<AddNewClass> {
 
   Future<void> uploadClassToDb() async {
     try {
+      int index = coachNameList.indexOf(selectedValue.toString());
+      String coachId = coachIdList[index];
+
       final data = await FirebaseFirestore.instance.collection("classes").add({
         "title": titleController.text.trim(),
         "coach": selectedValue,
+        "coachId": coachId.toString(),
         "size": int.parse(sizeController.text.trim()),
         "startTime": startDateTime,
         "endTime": endDateTime,
@@ -125,7 +160,7 @@ class _AddNewClassState extends State<AddNewClass> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } catch (e) {
-      print(e);
+      print('e: $e');
     }
   }
 
@@ -185,18 +220,18 @@ class _AddNewClassState extends State<AddNewClass> {
                 ),
               ),
               const SizedBox(height: 10),
-              dropdownItems.isEmpty
+              coachNameList.isEmpty
                   ? CircularProgressIndicator() // Show loading indicator
                   : DropdownMenu<String>(
                       expandedInsets: EdgeInsets.zero,
-                      initialSelection: dropdownItems.first,
+                      initialSelection: coachNameList.first,
                       onSelected: (String? value) {
                         // This is called when the user selects an item.
                         setState(() {
                           selectedValue = value!;
                         });
                       },
-                      dropdownMenuEntries: dropdownItems.map((String value) {
+                      dropdownMenuEntries: coachNameList.map((String value) {
                         return DropdownMenuEntry<String>(
                           value: value,
                           label: value,

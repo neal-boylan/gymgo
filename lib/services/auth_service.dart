@@ -50,16 +50,18 @@ class AuthService {
               builder: (BuildContext context) => const MyHomePage()));
     } on FirebaseAuthException catch (e) {
       print('e.code: ${e.code}');
+      print('e: $e');
       String message = '';
       if (e.code == 'channel-error') {
         message = 'No user found for that email.';
         var snackBar = SnackBar(content: Text('No user found for that email.'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else if (e.code == 'invalid-credential') {
         message = 'Wrong password provided for that user.';
         var snackBar =
             SnackBar(content: Text('Wrong password provided for that user.'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
       Fluttertoast.showToast(
         msg: message,

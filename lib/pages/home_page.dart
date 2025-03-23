@@ -3,13 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/admin/add_new_member.dart';
-import 'package:gymgo/pages/edit_member_profile.dart';
 import 'package:gymgo/pages/member_list.dart';
 import 'package:gymgo/pages/view_member_profile.dart';
 
 import '../services/auth_service.dart';
 import 'admin/add_new_class.dart';
 import 'class_list.dart';
+import 'edit_coach_profile.dart';
 import 'member/workout_list.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
       coach: true,
       member: false,
     ),
-    const EditMemberProfile(),
+    const EditCoachProfile(),
   ];
 
   final List<Widget> memberPages = [
