@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gymgo/pages/member/add_new_workout.dart';
 import 'package:gymgo/pages/member/view_workout.dart';
+import 'package:intl/intl.dart';
 
 import '../../widgets/class_card.dart';
 
@@ -68,14 +69,18 @@ class _WorkoutListState extends State<WorkoutList> {
                     child: ListView.builder(
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
+                        DateFormat dateFormat = DateFormat('E dd MMM yyyy');
                         return Row(
                           children: [
                             Expanded(
                               child: ClassCard(
                                 color: Theme.of(context).colorScheme.primary,
-                                title: snapshot.data!.docs[index].id,
-                                coach:
-                                    snapshot.data!.docs[index].data()['userId'],
+                                title: dateFormat
+                                    .format(snapshot.data!.docs[index]
+                                        .data()['workoutDate']
+                                        .toDate())
+                                    .toString(),
+                                coach: "",
                                 startTime: "",
                                 endTime: "",
                                 signins: 0,

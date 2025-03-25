@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ViewWorkout extends StatefulWidget {
   final String docId;
@@ -12,6 +13,7 @@ class ViewWorkout extends StatefulWidget {
 class _ViewWorkoutState extends State<ViewWorkout> {
   final String docId;
   _ViewWorkoutState(this.docId);
+  String workoutDate = "";
   List<dynamic> exercise = [];
   List<dynamic> reps = [];
   List<dynamic> sets = [];
@@ -26,6 +28,12 @@ class _ViewWorkoutState extends State<ViewWorkout> {
   Future<void> fetchData() async {
     try {
       print('docId: $docId');
+      String formatTimestamp(Timestamp timestamp) {
+        DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
+        return DateFormat('E dd MMM yyyy')
+            .format(dateTime); // Format as Mon 25 Feb 2025
+      }
+
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('workouts')
           .doc(docId)
@@ -33,6 +41,7 @@ class _ViewWorkoutState extends State<ViewWorkout> {
 
       if (doc.exists) {
         setState(() {
+          workoutDate = formatTimestamp(doc['workoutDate']).toString();
           exercise = List.from(doc['exercise']);
           sets = List.from(doc['sets']);
           reps = List.from(doc['reps']);
@@ -48,7 +57,7 @@ class _ViewWorkoutState extends State<ViewWorkout> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workout'),
+        title: Text('Workout, $workoutDate'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: exercise.isEmpty

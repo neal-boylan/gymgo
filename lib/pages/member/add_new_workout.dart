@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/home_page.dart';
+import 'package:intl/intl.dart';
 
 class AddNewWorkout extends StatefulWidget {
   const AddNewWorkout({super.key});
@@ -15,6 +16,9 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
   final setsController = TextEditingController();
   final repsController = TextEditingController();
   final weightController = TextEditingController();
+  DateTime workoutDate = DateTime.now();
+  String workoutDateFormatted = DateFormat('E dd MMM yyyy').format(
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day));
   List<String> exercises = [];
   List<int> sets = [];
   List<int> reps = [];
@@ -28,6 +32,13 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
     weightController.dispose();
     super.dispose();
   }
+
+  Future<DateTime?> pickDate() => showDatePicker(
+        context: context,
+        initialDate: workoutDate,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+      );
 
   Future<void> createWorkout() async {
     try {
@@ -85,7 +96,9 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
         "sets": sets,
         "reps": reps,
         "weight": weight,
-        "userId": userId
+        "userId": userId,
+        "workoutDate": workoutDate,
+        "dateAdded": DateTime.now()
       });
     } catch (e) {
       print(e);
@@ -104,7 +117,47 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
         child: Center(
           child: Column(
             children: [
-              // const SizedBox(height: 10),
+              Row(
+                children: [
+                  Text(
+                    'Workout Date: ',
+                    style: TextStyle(fontSize: 24),
+                    textAlign: TextAlign.right,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary),
+                      child: Text(
+                        workoutDateFormatted,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () async {
+                        final date = await pickDate();
+                        if (date == null) return;
+
+                        final newWorkoutDate = DateTime(
+                          date.year,
+                          date.month,
+                          date.day,
+                        );
+                        setState(() {
+                          workoutDate = newWorkoutDate;
+                          workoutDateFormatted = DateFormat('E dd MMM yyyy')
+                              .format(DateTime(newWorkoutDate.year,
+                                  newWorkoutDate.month, newWorkoutDate.day));
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
               TextField(
                 controller: exerciseController,
                 decoration: const InputDecoration(

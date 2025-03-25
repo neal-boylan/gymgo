@@ -48,6 +48,7 @@ dependencies:
   email_validator: ^2.1.17
   fluttertoast: ^8.2.5
   dropdown_search: ^6.0.2
+  flutter_native_splash: ^2.4.4
 
 dev_dependencies:
   flutter_test:
