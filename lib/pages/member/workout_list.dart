@@ -38,6 +38,7 @@ class _WorkoutListState extends State<WorkoutList> {
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection("workouts")
+                  .orderBy('workoutDate', descending: true)
                   .where('userId',
                       isEqualTo:
                           FirebaseAuth.instance.currentUser!.uid.toString())
