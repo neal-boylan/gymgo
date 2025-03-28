@@ -51,7 +51,7 @@ class _ViewCoachProfileState extends State<ViewCoachProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.member
+      appBar: widget.coach
           ? null
           : AppBar(
               title: Text('$firstName\'s profile'),

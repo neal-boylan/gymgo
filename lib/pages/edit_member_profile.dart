@@ -5,6 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/change_password.dart';
 
+import 'home_page.dart';
+
 class EditMemberProfile extends StatefulWidget {
   const EditMemberProfile({super.key});
 
@@ -37,13 +39,15 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
     fetchData();
     firstNameController.addListener(() {
       setState(() {
-        _isButtonVisible = firstNameController.text.isNotEmpty;
+        _isButtonVisible = firstNameController.text.isNotEmpty ||
+            lastNameController.text.isNotEmpty;
       });
     });
 
     lastNameController.addListener(() {
       setState(() {
-        _isButtonVisible = lastNameController.text.isNotEmpty;
+        _isButtonVisible = lastNameController.text.isNotEmpty ||
+            firstNameController.text.isNotEmpty;
       });
     });
   }
@@ -96,7 +100,18 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
         });
       }
 
-      // print(data.id);
+      final snackBar = SnackBar(
+        content: const Text('Profile Updated'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        ),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     } catch (e) {
       print(e);
     }
@@ -160,6 +175,16 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
                                 lastNameController.text.trim() != lastName
                             ? updateDb(userId)
                             : null;
+
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MyHomePage(),
+                            ),
+                          );
+                        }
                       },
                       child: const Text(
                         'UPDATE PROFILE',
