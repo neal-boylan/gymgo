@@ -99,6 +99,7 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
                                           .data()['lastName'],
                                       memberId: snapshot.data!.docs[index]
                                           .data()['userId'],
+                                      docId: docId,
                                     ),
                                   ),
                                 ],

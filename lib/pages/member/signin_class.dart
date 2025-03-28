@@ -17,7 +17,7 @@ class _SignInClassState extends State<SignInClass> {
   List<dynamic> signedIn = [];
   int size = 10;
 
-  Future<void> addMemberClassToDb() async {
+  Future<void> addMemberToClassDb() async {
     try {
       FirebaseFirestore.instance.collection("classes").doc(docId).update({
         'signins': FieldValue.arrayUnion([uid])
@@ -27,7 +27,7 @@ class _SignInClassState extends State<SignInClass> {
     }
   }
 
-  Future<void> removeMemberClassFromDb() async {
+  Future<void> removeMemberFromClassDb() async {
     try {
       final String uid = FirebaseAuth.instance.currentUser!.uid;
       print('uid: $uid');
@@ -141,7 +141,7 @@ class _SignInClassState extends State<SignInClass> {
                           backgroundColor:
                               Theme.of(context).colorScheme.primary),
                       onPressed: () async {
-                        await removeMemberClassFromDb();
+                        await removeMemberFromClassDb();
                         if (context.mounted) {
                           Navigator.pop(context);
                         }
@@ -170,7 +170,7 @@ class _SignInClassState extends State<SignInClass> {
                               backgroundColor:
                                   Theme.of(context).colorScheme.primary),
                           onPressed: () async {
-                            await addMemberClassToDb();
+                            await addMemberToClassDb();
                             if (context.mounted) {
                               Navigator.pop(context);
                             }

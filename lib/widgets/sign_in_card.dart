@@ -1,40 +1,51 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-// class SignInCard extends StatelessWidget {
-//   final String firstName;
-//   final String lastName;
-//   final String uid;
-//   final bool isChecked;
-//   final void Function()? onTap;
-//   const SignInCard({
-//     super.key,
-//     required this.firstName,
-//     required this.lastName,
-//     required this.uid,
-//     required this.isChecked,
-//     this.onTap,
-//   });
-
 class SignInCard extends StatefulWidget {
+  final String firstName;
+  final String lastName;
+  final String memberId;
+  final String docId;
+
   const SignInCard(
       {super.key,
       required this.firstName,
       required this.lastName,
-      required this.memberId});
-
-  final String firstName;
-  final String lastName;
-  final String memberId;
+      required this.memberId,
+      required this.docId});
 
   @override
   State<SignInCard> createState() => _SignInCardState();
 }
 
 class _SignInCardState extends State<SignInCard> {
-  // String firstName = "";
-  // String lastName = "";
-  // String memberId = "";
   bool isChecked = false;
+
+  Future<void> addMemberToClassDb(String memberId) async {
+    try {
+      FirebaseFirestore.instance
+          .collection("classes")
+          .doc(widget.docId)
+          .update({
+        'attended': FieldValue.arrayUnion([memberId])
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> removeMemberClassFromDb(String memberId) async {
+    try {
+      FirebaseFirestore.instance
+          .collection("classes")
+          .doc(widget.docId)
+          .update({
+        'attended': FieldValue.arrayRemove([memberId])
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,25 +70,34 @@ class _SignInCardState extends State<SignInCard> {
         child: Align(
           alignment: Alignment.centerLeft,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "${widget.firstName} ${widget.lastName}",
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Checkbox(
-                value: isChecked,
-                onChanged: (bool? value) {
-                  setState(() {
-                    isChecked = value!;
-                  });
-                },
-                shape: CircleBorder(), // Makes the checkbox circular
-                checkColor: Colors.white,
-                activeColor: Colors.blue,
+              Transform.scale(
+                scale: 1.5,
+                child: Checkbox(
+                  value: isChecked,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isChecked = value!;
+                    });
+                    if (value != null) {
+                      value
+                          ? addMemberToClassDb(widget.memberId)
+                          : removeMemberClassFromDb(widget.memberId);
+                    }
+                  },
+                  shape: CircleBorder(),
+                  checkColor: Colors.white,
+                  activeColor: Colors.blue,
+                ),
               )
             ],
           ),
