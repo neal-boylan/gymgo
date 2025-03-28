@@ -4,7 +4,7 @@ import 'package:gymgo/pages/member/edit_exercise.dart';
 import 'package:intl/intl.dart';
 
 import '../../widgets/exercise_card.dart';
-import 'edit_workout.dart';
+import 'add_exercise.dart';
 
 class ViewWorkout extends StatefulWidget {
   final String docId;
@@ -105,33 +105,31 @@ class _ViewWorkoutState extends State<ViewWorkout> {
                       },
                     ),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        bottom: 50.0,
-                      ),
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditWorkout(docId: docId),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            'EDIT WORKOUT',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      bottom: 50.0,
+                    ),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddExercise(docId: docId),
                             ),
+                          );
+                        },
+                        child: const Text(
+                          'ADD EXERCISE TO WORKOUT',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
                           ),
                         ),
                       ),

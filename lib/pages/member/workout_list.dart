@@ -102,39 +102,22 @@ class _WorkoutListState extends State<WorkoutList> {
                 }
               },
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                bottom: 10.0,
-                top: 10.0,
-              ),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddNewWorkout(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'ADD NEW WORKOUT',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddNewWorkout(),
+            ),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

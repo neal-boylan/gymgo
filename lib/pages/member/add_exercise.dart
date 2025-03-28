@@ -2,19 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/member/view_workout.dart';
 
-class EditExercise extends StatefulWidget {
+class AddExercise extends StatefulWidget {
   final String docId;
-  final int index;
-  const EditExercise({super.key, required this.docId, required this.index});
+  const AddExercise({super.key, required this.docId});
 
   @override
-  State<EditExercise> createState() => _EditExerciseState(docId, index);
+  State<AddExercise> createState() => _AddExerciseState(docId);
 }
 
-class _EditExerciseState extends State<EditExercise> {
+class _AddExerciseState extends State<AddExercise> {
   final String docId;
-  final int index;
-  _EditExerciseState(this.docId, this.index);
+  _AddExerciseState(this.docId);
 
   final exerciseController = TextEditingController();
   final setsController = TextEditingController();
@@ -34,54 +32,25 @@ class _EditExerciseState extends State<EditExercise> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadExerciseData();
-  }
-
-  Future<void> _loadExerciseData() async {
-    DocumentSnapshot exerciseDoc = await FirebaseFirestore.instance
-        .collection('workouts')
-        .doc(docId)
-        .get();
-
-    if (exerciseDoc.exists) {
-      setState(() {
-        exerciseController.text = exerciseDoc['exercise'][index];
-        setsController.text = exerciseDoc['sets'][index].toString();
-        repsController.text = exerciseDoc['reps'][index].toString();
-        weightController.text = exerciseDoc['weight'][index].toString();
-      });
+  Future<void> addExercise(String listName, String newItem) async {
+    Object addItem;
+    if (listName == 'exercise') {
+      addItem = newItem;
+    } else if (listName == 'weight') {
+      addItem = double.parse(newItem);
+    } else {
+      addItem = int.parse(newItem);
     }
-  }
-
-  Future<void> updateExercise(String listName, String newValue) async {
-    CollectionReference users =
-        FirebaseFirestore.instance.collection('workouts');
-
-    DocumentSnapshot doc = await users.doc(docId).get();
-    if (doc.exists) {
-      List<dynamic> items = List.from(doc[listName]);
-
-      if (listName == 'exercise') {
-        items[index] = newValue;
-      } else if (listName == 'weight') {
-        items[index] = double.parse(newValue);
-      } else {
-        items[index] = int.parse(newValue);
-      }
-      await users.doc(docId).update({
-        listName: items,
-      });
-    }
+    await FirebaseFirestore.instance.collection('workouts').doc(docId).update({
+      listName: FieldValue.arrayUnion([addItem])
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Workout'),
+        title: const Text('Add Exercise to Workout'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Padding(
@@ -135,19 +104,19 @@ class _EditExerciseState extends State<EditExercise> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary),
                 onPressed: () async {
-                  await updateExercise(
+                  await addExercise(
                     'exercise',
                     exerciseController.text,
                   );
-                  await updateExercise(
+                  await addExercise(
                     'sets',
                     setsController.text,
                   );
-                  await updateExercise(
+                  await addExercise(
                     'reps',
                     repsController.text,
                   );
-                  await updateExercise(
+                  await addExercise(
                     'weight',
                     weightController.text,
                   );
@@ -163,7 +132,7 @@ class _EditExerciseState extends State<EditExercise> {
                   }
                 },
                 child: const Text(
-                  'UPDATE EXERCISE',
+                  'ADD EXERCISE',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
