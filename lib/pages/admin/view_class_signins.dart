@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/admin/edit_class.dart';
 
-import '../../widgets/class_card.dart';
+import '../../widgets/sign_in_card.dart';
 
 class ViewClassSignins extends StatefulWidget {
   final String docId;
@@ -75,20 +75,30 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
                             itemBuilder: (context, index) {
                               return Row(
                                 children: [
+                                  // Expanded(
+                                  //   child: ClassCard(
+                                  //     color:
+                                  //         Theme.of(context).colorScheme.primary,
+                                  //     title: snapshot.data!.docs[index]
+                                  //         .data()['firstName'],
+                                  //     coach: snapshot.data!.docs[index]
+                                  //         .data()['lastName'],
+                                  //     startTime: "",
+                                  //     endTime: "",
+                                  //     signins: 0,
+                                  //     size: 0,
+                                  //     uid: "",
+                                  //     onTap: () {},
+                                  //   ),
+                                  // ),
                                   Expanded(
-                                    child: ClassCard(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      title: snapshot.data!.docs[index]
+                                    child: SignInCard(
+                                      firstName: snapshot.data!.docs[index]
                                           .data()['firstName'],
-                                      coach: snapshot.data!.docs[index]
+                                      lastName: snapshot.data!.docs[index]
                                           .data()['lastName'],
-                                      startTime: "",
-                                      endTime: "",
-                                      signins: 0,
-                                      size: 0,
-                                      uid: "",
-                                      onTap: () {},
+                                      memberId: snapshot.data!.docs[index]
+                                          .data()['userId'],
                                     ),
                                   ),
                                 ],
