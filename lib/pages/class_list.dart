@@ -111,18 +111,23 @@ class _ClassListState extends State<ClassList> {
                               uid: FirebaseAuth.instance.currentUser!.uid,
                               onTap: () {
                                 var docId = snapshot.data!.docs[index].id;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => widget.member
-                                        ? SignInClass(
-                                            docId: docId,
-                                          )
-                                        : ViewClassSignins(
-                                            docId: docId,
-                                          ),
-                                  ),
-                                );
+                                snapshot.data!.docs[index]
+                                        .data()['startTime']
+                                        .toDate()
+                                        .isAfter(DateTime.now())
+                                    ? Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => widget.member
+                                              ? SignInClass(
+                                                  docId: docId,
+                                                )
+                                              : ViewClassSignins(
+                                                  docId: docId,
+                                                ),
+                                        ),
+                                      )
+                                    : print('doc clicked: $docId');
                               },
                             ),
                           ),

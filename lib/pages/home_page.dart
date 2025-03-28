@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
     DateTime nowDateTime = nowTimestamp.toDate();
     DateTime pastDateTime = nowDateTime.add(Duration(days: -7));
     Timestamp pastTimestamp = Timestamp.fromDate(pastDateTime);
-    DateTime futureDateTime = nowDateTime.add(Duration(days: 14));
+    DateTime futureDateTime = nowDateTime.add(Duration(days: 7));
     Timestamp futureTimestamp = Timestamp.fromDate(futureDateTime);
 
     // getting all the documents from fb snapshot

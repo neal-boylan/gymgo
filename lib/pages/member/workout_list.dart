@@ -6,7 +6,7 @@ import 'package:gymgo/pages/member/add_new_workout.dart';
 import 'package:gymgo/pages/member/view_workout.dart';
 import 'package:intl/intl.dart';
 
-import '../../widgets/class_card.dart';
+import '../../widgets/workout_card.dart';
 
 class WorkoutList extends StatefulWidget {
   const WorkoutList({super.key});
@@ -74,19 +74,13 @@ class _WorkoutListState extends State<WorkoutList> {
                         return Row(
                           children: [
                             Expanded(
-                              child: ClassCard(
+                              child: WorkoutCard(
                                 color: Theme.of(context).colorScheme.primary,
-                                title: dateFormat
+                                workoutDate: dateFormat
                                     .format(snapshot.data!.docs[index]
                                         .data()['workoutDate']
                                         .toDate())
                                     .toString(),
-                                coach: "",
-                                startTime: "",
-                                endTime: "",
-                                signins: 0,
-                                size: 0,
-                                uid: FirebaseAuth.instance.currentUser!.uid,
                                 onTap: () {
                                   var docId = snapshot.data!.docs[index].id;
                                   Navigator.push(
