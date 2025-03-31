@@ -13,7 +13,14 @@ class SignUpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GestureDetector(
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         bottomNavigationBar: _signin(context),
@@ -53,7 +60,9 @@ class SignUpPage extends StatelessWidget {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _emailAddress() {
@@ -75,16 +84,19 @@ class SignUpPage extends StatelessWidget {
         TextField(
           controller: _emailController,
           decoration: InputDecoration(
-              filled: true,
-              hintText: 'email@gmail.com',
-              hintStyle: const TextStyle(
-                  color: Color(0xff6A6A6A),
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14),
-              fillColor: const Color(0xffF7F7F9),
-              border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(14))),
+            filled: true,
+            hintText: 'email@gmail.com',
+            hintStyle: const TextStyle(
+                color: Color(0xff6A6A6A),
+                fontWeight: FontWeight.normal,
+                fontSize: 14),
+            fillColor: const Color(0xffF7F7F9),
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+          keyboardType: TextInputType.emailAddress,
         )
       ],
     );
@@ -98,10 +110,11 @@ class SignUpPage extends StatelessWidget {
         Text(
           'Password',
           style: GoogleFonts.raleway(
-              textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16)),
+            textStyle: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.normal,
+                fontSize: 16),
+          ),
         ),
         const SizedBox(
           height: 16,
@@ -110,11 +123,14 @@ class SignUpPage extends StatelessWidget {
           controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xffF7F7F9),
-              border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(14))),
+            filled: true,
+            fillColor: const Color(0xffF7F7F9),
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+          keyboardType: TextInputType.visiblePassword,
         )
       ],
     );
@@ -150,8 +166,9 @@ class SignUpPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(children: [
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: [
             const TextSpan(
               text: "Already Have Account? ",
               style: TextStyle(
@@ -160,19 +177,22 @@ class SignUpPage extends StatelessWidget {
                   fontSize: 16),
             ),
             TextSpan(
-                text: "Log In",
-                style: const TextStyle(
-                    color: Color(0xff1A1D1E),
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  }),
-          ])),
+              text: "Log In",
+              style: const TextStyle(
+                  color: Color(0xff1A1D1E),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

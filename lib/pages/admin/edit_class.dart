@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../home_page.dart';
+
 class EditClass extends StatefulWidget {
   final String docId;
   const EditClass({super.key, required this.docId});
@@ -14,16 +16,103 @@ class EditClass extends StatefulWidget {
 
 class _EditClassState extends State<EditClass> {
   final String docId;
+  List<String> coachList = [];
+  List<Map<String, dynamic>> coachDocList = [];
+  List<String> coachNameList = [];
+  List<String> coachIdList = [];
+  String? selectedValue;
+
   _EditClassState(this.docId);
 
   final titleController = TextEditingController();
   final coachController = TextEditingController();
   final sizeController = TextEditingController();
-  DateTime startDateTime = DateTime.now();
-  DateTime endDateTime = DateTime.now();
-  DateTime selectedDate = DateTime.now();
-  bool weekly = false;
   File? file;
+  var title = "";
+  var classSize = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+    fetchDropdownValues();
+    fetchCoachDocuments();
+  }
+
+  Future<void> fetchCoachDocuments() async {
+    List<String> nameValues = [];
+    List<String> idValues = [];
+
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('coaches').get();
+
+    for (var doc in querySnapshot.docs) {
+      if (doc.data() is Map<String, dynamic> &&
+          (doc.data() as Map<String, dynamic>).containsKey('firstName')) {
+        nameValues.add(doc['firstName'].toString());
+        idValues.add(doc.id.toString());
+      }
+    }
+
+    setState(() {
+      coachDocList = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      coachNameList = nameValues;
+      coachIdList = idValues;
+    });
+  }
+
+  // Function to fetch Firestore values
+  Future<void> fetchDropdownValues() async {
+    List<String> values = await getFieldValues("coaches", "firstName");
+    setState(() {
+      coachList = values;
+      if (coachList.isNotEmpty) {
+        selectedValue = coachList.first; // Set default selected value
+      }
+    });
+  }
+
+  // Function to get field values from Firestore
+  Future<List<String>> getFieldValues(
+      String collectionName, String fieldName) async {
+    List<String> fieldValues = [];
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection(collectionName).get();
+      for (var doc in querySnapshot.docs) {
+        if (doc.data() is Map<String, dynamic> &&
+            (doc.data() as Map<String, dynamic>).containsKey(fieldName)) {
+          fieldValues
+              .add(doc[fieldName].toString()); // Convert to string if needed
+        }
+      }
+    } catch (e) {
+      print("Error fetching field values: $e");
+    }
+    return fieldValues;
+  }
+
+  Future<void> fetchData() async {
+    try {
+      var collection = FirebaseFirestore.instance.collection('classes');
+      var docSnapshot = await collection.doc(docId).get();
+      if (docSnapshot.exists) {
+        Map<String, dynamic>? data = docSnapshot.data();
+
+        setState(() {
+          title = data?['title'];
+          classSize = data?['size'];
+          titleController.text = title;
+          sizeController.text = classSize.toString();
+        });
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
+  }
 
   @override
   void dispose() {
@@ -33,35 +122,20 @@ class _EditClassState extends State<EditClass> {
     super.dispose();
   }
 
-  Future<DateTime?> pickDate() => showDatePicker(
-        context: context,
-        initialDate: startDateTime,
-        firstDate: DateTime(1900),
-        lastDate: DateTime(2100),
-      );
-
-  Future<TimeOfDay?> pickStartTime() => showTimePicker(
-        context: context,
-        initialTime:
-            TimeOfDay(hour: startDateTime.hour, minute: startDateTime.minute),
-      );
-
-  Future<TimeOfDay?> pickEndTime() => showTimePicker(
-        context: context,
-        initialTime:
-            TimeOfDay(hour: endDateTime.hour, minute: endDateTime.minute),
-      );
-
   Future<void> editClassInDb() async {
     try {
+      int index = coachNameList.indexOf(selectedValue.toString());
+      String coachId = coachIdList[index];
+
       final data = await FirebaseFirestore.instance
           .collection("classes")
           .doc(docId)
           .update({
-        'coach': coachController,
-        'endTime': endDateTime,
-        'size': sizeController,
-        'startTime': startDateTime,
+        'coach': selectedValue,
+        "coachId": coachId.toString(),
+        //'endTime': endDateTime,
+        'size': int.parse(sizeController.text.trim()),
+        //'startTime': startDateTime,
         'title': titleController.text.trim(),
       });
       print('update: $docId');
@@ -72,216 +146,117 @@ class _EditClassState extends State<EditClass> {
 
   @override
   Widget build(BuildContext context) {
-    final startHours = startDateTime.hour.toString().padLeft(2, '0');
-    final startMinutes = startDateTime.minute.toString().padLeft(2, '0');
-    final endHours = endDateTime.hour.toString().padLeft(2, '0');
-    final endMinutes = endDateTime.minute.toString().padLeft(2, '0');
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Class'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  hintText: 'Title',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: coachController,
-                decoration: const InputDecoration(
-                  hintText: 'Coach',
-                ),
-                maxLines: 1,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                keyboardType: TextInputType.number,
-                controller: sizeController,
-                decoration: const InputDecoration(
-                  hintText: '10',
-                ),
-                maxLines: 1,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Weekly',
-                    style: TextStyle(fontSize: 32),
+    return GestureDetector(
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Class'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Container(
+          height: 50,
+          margin: const EdgeInsets.all(10),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary),
+            onPressed: () async {
+              await editClassInDb();
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(),
                   ),
-                  Checkbox(
-                    value: weekly,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        weekly = value!;
-                      });
-                    },
-                  ),
-                ],
+                );
+              }
+            },
+            child: const Text(
+              'SUBMIT',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
               ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Date',
-                      style: TextStyle(fontSize: 32),
-                      textAlign: TextAlign.right,
-                    ),
+            ),
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Description",
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary),
-                      child: Text(
-                        '${startDateTime.year}/${startDateTime.month}/${startDateTime.day}',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
+                ),
+                const SizedBox(height: 5),
+                TextFormField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    hintText: title,
+                    // label: Text('Title'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Coach",
+                  ),
+                ),
+                const SizedBox(height: 5),
+                coachNameList.isEmpty
+                    ? CircularProgressIndicator() // Show loading indicator
+                    : DropdownMenu<String>(
+                        label: Text('Coach'),
+                        expandedInsets: EdgeInsets.zero,
+                        initialSelection: coachNameList.first,
+                        onSelected: (String? value) {
+                          // This is called when the user selects an item.
+                          setState(() {
+                            selectedValue = value!;
+                          });
+                        },
+                        dropdownMenuEntries: coachNameList.map((String value) {
+                          return DropdownMenuEntry<String>(
+                            value: value,
+                            label: value,
+                          );
+                        }).toList(),
                       ),
-                      onPressed: () async {
-                        final date = await pickDate();
-                        if (date == null) return;
-
-                        final newDateTime = DateTime(
-                          date.year,
-                          date.month,
-                          date.day,
-                          startDateTime.hour,
-                          startDateTime.minute,
-                        );
-                        setState(() => startDateTime = newDateTime);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Start Time',
-                      style: TextStyle(fontSize: 32),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary),
-                      child: Text(
-                        '$startHours:$startMinutes',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                      onPressed: () async {
-                        final time = await pickStartTime();
-                        if (time == null) return;
-
-                        final newDateTime = DateTime(
-                          startDateTime.year,
-                          startDateTime.month,
-                          startDateTime.day,
-                          time.hour,
-                          time.minute,
-                        );
-                        setState(
-                          () {
-                            startDateTime = newDateTime;
-                            // endDateTime = DateTime(
-                            //   startDateTime.year,
-                            //   startDateTime.month,
-                            //   startDateTime.day,
-                            //   time.hour + 1,
-                            //   time.minute,
-                            // );
-                            endDateTime =
-                                startDateTime.add(const Duration(hours: 1));
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'End Time',
-                      style: TextStyle(fontSize: 32),
-                      textAlign: TextAlign.right,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary),
-                      child: Text(
-                        '$endHours:$endMinutes',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                      onPressed: () async {
-                        final time = await pickEndTime();
-                        if (time == null) return;
-
-                        final newDateTime = DateTime(
-                          endDateTime.year,
-                          endDateTime.month,
-                          endDateTime.day,
-                          time.hour,
-                          time.minute,
-                        );
-                        setState(() => endDateTime = newDateTime);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                onPressed: () async {
-                  await editClassInDb();
-                },
-                child: const Text(
-                  'SAVE CHANGES',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Class Size",
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 5),
+                TextField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  keyboardType: TextInputType.number,
+                  controller: sizeController,
+                  decoration: InputDecoration(
+                    hintText: classSize.toString(),
+                  ),
+                  maxLines: 1,
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),

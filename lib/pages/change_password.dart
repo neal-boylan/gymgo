@@ -60,131 +60,142 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Change Password'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                const SizedBox(height: 10),
-                TextFormField(
-                  obscureText: true,
-                  controller: _oldPasswordController,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  decoration: const InputDecoration(
-                    hintText: 'Old Password',
+    return GestureDetector(
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Change Password'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    obscureText: true,
+                    controller: _oldPasswordController,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration: const InputDecoration(
+                      label: Text('Old Password'),
+                    ),
+                    maxLines: 1,
+                    keyboardType: TextInputType.visiblePassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your old password';
+                      }
+                      if (value.length <= 6) {
+                        return 'Password must have at least 6 characters';
+                      }
+                      return null;
+                    },
                   ),
-                  maxLines: 1,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your old password';
-                    }
-                    if (value.length <= 6) {
-                      return 'Password must have at least 6 characters';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  obscureText: true,
-                  controller: _newPasswordController,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  decoration: const InputDecoration(
-                    hintText: 'New Password',
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    obscureText: true,
+                    controller: _newPasswordController,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration: const InputDecoration(
+                      label: Text('New Password'),
+                    ),
+                    maxLines: 1,
+                    keyboardType: TextInputType.visiblePassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your new password';
+                      }
+                      if (value.length <= 6) {
+                        return 'Password must contain at least 6 characters';
+                      }
+                      if (value != _confirmNewPasswordController.text) {
+                        return 'New passwords do not match';
+                      }
+                      return null;
+                    },
                   ),
-                  maxLines: 1,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your new password';
-                    }
-                    if (value.length <= 6) {
-                      return 'Password must contain at least 6 characters';
-                    }
-                    if (value != _confirmNewPasswordController.text) {
-                      return 'New passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  obscureText: true,
-                  controller: _confirmNewPasswordController,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  decoration: const InputDecoration(
-                    hintText: 'Confirm New Password',
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    obscureText: true,
+                    controller: _confirmNewPasswordController,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    decoration: const InputDecoration(
+                      label: Text('Confirm New Password'),
+                    ),
+                    maxLines: 1,
+                    keyboardType: TextInputType.visiblePassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your new password';
+                      }
+                      if (value.length <= 6) {
+                        return 'Password must contain at least 6 characters';
+                      }
+                      if (value != _newPasswordController.text) {
+                        return 'New passwords do not match';
+                      }
+                      return null;
+                    },
                   ),
-                  maxLines: 1,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your new password';
-                    }
-                    if (value.length <= 6) {
-                      return 'Password must contain at least 6 characters';
-                    }
-                    if (value != _newPasswordController.text) {
-                      return 'New passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary),
-                  onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Confirmation'),
-                            content: StatefulBuilder(
-                                builder: (stfContext, stfSetState) {
-                              return Container(
-                                child: const Text(
-                                    'Are you sure you want to change your password?'),
-                              );
-                            }),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  changePassword(_oldPasswordController.text,
-                                      _newPasswordController.text);
-                                },
-                                child: const Text('Change'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  },
-                  child: const Text(
-                    'UPDATE PASSWORD',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary),
+                    onPressed: () async {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Confirmation'),
+                              content: StatefulBuilder(
+                                  builder: (stfContext, stfSetState) {
+                                return Container(
+                                  child: const Text(
+                                      'Are you sure you want to change your password?'),
+                                );
+                              }),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    changePassword(_oldPasswordController.text,
+                                        _newPasswordController.text);
+                                  },
+                                  child: const Text('Change'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'UPDATE PASSWORD',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

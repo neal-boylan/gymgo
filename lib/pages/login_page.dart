@@ -14,44 +14,52 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      bottomNavigationBar: _signup(context),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  'Find your Gym below and Log In',
-                  style: GoogleFonts.raleway(
-                      textStyle: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 32)),
-                  textAlign: TextAlign.center,
+    return GestureDetector(
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        bottomNavigationBar: _signup(context),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    'Find your Gym below and Log In',
+                    style: GoogleFonts.raleway(
+                        textStyle: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 32)),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 80,
-              ),
-              _gymPicker(),
-              const SizedBox(
-                height: 40,
-              ),
-              _emailAddress(),
-              const SizedBox(
-                height: 20,
-              ),
-              _password(),
-              const SizedBox(
-                height: 50,
-              ),
-              _signin(context),
-            ],
+                const SizedBox(
+                  height: 80,
+                ),
+                _gymPicker(),
+                const SizedBox(
+                  height: 40,
+                ),
+                _emailAddress(),
+                const SizedBox(
+                  height: 20,
+                ),
+                _password(),
+                const SizedBox(
+                  height: 50,
+                ),
+                _signin(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -101,16 +109,19 @@ class LoginPage extends StatelessWidget {
         TextField(
           controller: _emailController,
           decoration: InputDecoration(
-              filled: true,
-              hintText: 'email@gmail.com',
-              hintStyle: const TextStyle(
-                  color: Color(0xff6A6A6A),
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14),
-              fillColor: const Color(0xffF7F7F9),
-              border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(14))),
+            filled: true,
+            hintText: 'email@gmail.com',
+            hintStyle: const TextStyle(
+                color: Color(0xff6A6A6A),
+                fontWeight: FontWeight.normal,
+                fontSize: 14),
+            fillColor: const Color(0xffF7F7F9),
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+          keyboardType: TextInputType.emailAddress,
         )
       ],
     );
@@ -136,11 +147,14 @@ class LoginPage extends StatelessWidget {
           obscureText: true,
           controller: _passwordController,
           decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xffF7F7F9),
-              border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(14))),
+            filled: true,
+            fillColor: const Color(0xffF7F7F9),
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+          keyboardType: TextInputType.visiblePassword,
         )
       ],
     );
@@ -176,8 +190,9 @@ class LoginPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(children: [
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: [
             const TextSpan(
               text: "New User? ",
               style: TextStyle(
@@ -186,19 +201,22 @@ class LoginPage extends StatelessWidget {
                   fontSize: 16),
             ),
             TextSpan(
-                text: "Create Account",
-                style: const TextStyle(
-                    color: Color(0xff1A1D1E),
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
-                    );
-                  }),
-          ])),
+              text: "Create Account",
+              style: const TextStyle(
+                  color: Color(0xff1A1D1E),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignUpPage()),
+                  );
+                },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

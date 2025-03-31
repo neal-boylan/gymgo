@@ -79,99 +79,111 @@ class _EditExerciseState extends State<EditExercise> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Workout'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              TextField(
-                controller: exerciseController,
-                decoration: const InputDecoration(
-                  hintText: 'Exercise',
+    return GestureDetector(
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Exercise'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                TextField(
+                  controller: exerciseController,
+                  decoration: const InputDecoration(
+                    label: Text('Exercise'),
+                  ),
+                  maxLines: 1,
+                  keyboardType: TextInputType.text,
                 ),
-                maxLines: 1,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: setsController,
-                      decoration: const InputDecoration(
-                        hintText: 'Sets',
-                      ),
-                      maxLines: 1,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: repsController,
-                      decoration: const InputDecoration(
-                        hintText: 'Reps',
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: setsController,
+                        decoration: const InputDecoration(
+                          label: Text('Sets'),
+                        ),
+                        maxLines: 1,
+                        keyboardType: TextInputType.number,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: weightController,
-                      decoration: const InputDecoration(
-                        hintText: 'Weight',
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: TextFormField(
+                        controller: repsController,
+                        decoration: const InputDecoration(
+                          label: Text('Reps'),
+                        ),
+                        keyboardType: TextInputType.number,
                       ),
-                      maxLines: 1,
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                onPressed: () async {
-                  await updateExercise(
-                    'exercise',
-                    exerciseController.text,
-                  );
-                  await updateExercise(
-                    'sets',
-                    setsController.text,
-                  );
-                  await updateExercise(
-                    'reps',
-                    repsController.text,
-                  );
-                  await updateExercise(
-                    'weight',
-                    weightController.text,
-                  );
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewWorkout(docId: docId),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: TextFormField(
+                        controller: weightController,
+                        decoration: const InputDecoration(
+                          label: Text('Weight'),
+                        ),
+                        maxLines: 1,
+                        keyboardType: TextInputType.number,
                       ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary),
+                  onPressed: () async {
+                    await updateExercise(
+                      'exercise',
+                      exerciseController.text,
                     );
-                  }
-                },
-                child: const Text(
-                  'UPDATE EXERCISE',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
+                    await updateExercise(
+                      'sets',
+                      setsController.text,
+                    );
+                    await updateExercise(
+                      'reps',
+                      repsController.text,
+                    );
+                    await updateExercise(
+                      'weight',
+                      weightController.text,
+                    );
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewWorkout(docId: docId),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'UPDATE EXERCISE',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-            ],
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),

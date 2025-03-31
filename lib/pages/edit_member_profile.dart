@@ -119,87 +119,97 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Update Profile'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "First Name",
+    return GestureDetector(
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Update Profile'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "First Name",
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                TextField(
-                  controller: firstNameController,
-                  decoration: InputDecoration(
-                    hintText: firstName,
+                  const SizedBox(height: 5),
+                  TextField(
+                    controller: firstNameController,
+                    decoration: InputDecoration(
+                      hintText: firstName,
+                    ),
+                    maxLines: 1,
+                    keyboardType: TextInputType.text,
                   ),
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Last Name",
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Last Name",
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                TextField(
-                  controller: lastNameController,
-                  decoration: InputDecoration(
-                    hintText: lastName,
+                  const SizedBox(height: 5),
+                  TextField(
+                    controller: lastNameController,
+                    decoration: InputDecoration(
+                      hintText: lastName,
+                    ),
+                    maxLines: 1,
+                    keyboardType: TextInputType.text,
                   ),
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 20),
-                _changePassword(context),
-                const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Visibility(
-                    visible: _isButtonVisible,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary),
-                      onPressed: () async {
-                        firstNameController.text.trim() != firstName ||
-                                lastNameController.text.trim() != lastName
-                            ? updateDb(userId)
-                            : null;
+                  const SizedBox(height: 20),
+                  _changePassword(context),
+                  const SizedBox(height: 20),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Visibility(
+                      visible: _isButtonVisible,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary),
+                        onPressed: () async {
+                          firstNameController.text.trim() != firstName ||
+                                  lastNameController.text.trim() != lastName
+                              ? updateDb(userId)
+                              : null;
 
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MyHomePage(),
-                            ),
-                          );
-                        }
-                      },
-                      child: const Text(
-                        'UPDATE PROFILE',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MyHomePage(),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text(
+                          'UPDATE PROFILE',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
