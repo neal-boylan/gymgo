@@ -1,15 +1,94 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gymgo/pages/signup_page.dart';
 
 import '../services/auth_service.dart';
-import 'login_page_2.dart';
 
-class SignUpPage extends StatelessWidget {
-  SignUpPage({super.key});
+class LoginPage2 extends StatefulWidget {
+  const LoginPage2({super.key});
 
+  @override
+  State<LoginPage2> createState() => _LoginPage2State();
+}
+
+// typedef MenuEntry = DropdownMenuEntry<String>;
+
+class _LoginPage2State extends State<LoginPage2> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  List<String> gymList = [];
+  List<Map<String, dynamic>> gymDocList = [];
+  List<String> gymNameList = ['1', '2'];
+  List<String> gymIdList = [];
+  String? selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDropdownValues();
+    fetchCoachDocuments();
+  }
+
+  Future<void> fetchCoachDocuments() async {
+    List<String> nameValues = [];
+    List<String> idValues = [];
+
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('gyms').get();
+
+    for (var doc in querySnapshot.docs) {
+      if (doc.data() is Map<String, dynamic> &&
+          (doc.data() as Map<String, dynamic>).containsKey('name')) {
+        nameValues.add(doc['name'].toString());
+        idValues.add(doc.id.toString());
+      }
+    }
+
+    setState(() {
+      gymDocList = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      gymNameList = nameValues;
+      gymIdList = idValues;
+    });
+  }
+
+  // Function to fetch Firestore values
+  Future<void> fetchDropdownValues() async {
+    List<String> values = await getFieldValues("gyms", "name");
+    setState(() {
+      gymList = values;
+      if (gymList.isNotEmpty) {
+        selectedValue = gymList.first; // Set default selected value
+      }
+    });
+    print("fetchDropdownValues got");
+  }
+
+  // Function to get field values from Firestore
+  Future<List<String>> getFieldValues(
+      String collectionName, String fieldName) async {
+    List<String> fieldValues = [];
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection(collectionName).get();
+      for (var doc in querySnapshot.docs) {
+        if (doc.data() is Map<String, dynamic> &&
+            (doc.data() as Map<String, dynamic>).containsKey(fieldName)) {
+          fieldValues
+              .add(doc[fieldName].toString()); // Convert to string if needed
+        }
+      }
+      print("getFieldValues got");
+    } catch (e) {
+      print("Error fetching field values: $e");
+    }
+    return fieldValues;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +102,16 @@ class SignUpPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        bottomNavigationBar: _signin(context),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          toolbarHeight: 50,
-        ),
+        bottomNavigationBar: _signup(context),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Center(
                   child: Text(
-                    'Register your gym on GymGo!',
+                    'Find your Gym below and Log In',
                     style: GoogleFonts.raleway(
                         textStyle: const TextStyle(
                             color: Colors.black,
@@ -48,6 +123,10 @@ class SignUpPage extends StatelessWidget {
                 const SizedBox(
                   height: 80,
                 ),
+                _gymPicker(),
+                const SizedBox(
+                  height: 40,
+                ),
                 _emailAddress(),
                 const SizedBox(
                   height: 20,
@@ -56,12 +135,51 @@ class SignUpPage extends StatelessWidget {
                 const SizedBox(
                   height: 50,
                 ),
-                _signup(context),
+                _signin(context),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _gymPicker() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Select your Gym',
+          style: GoogleFonts.raleway(
+              textStyle: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16)),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        gymNameList.isEmpty
+            ? CircularProgressIndicator() // Show loading indicator
+            : DropdownMenu<String>(
+                label: Text('Coach'),
+                expandedInsets: EdgeInsets.zero,
+                initialSelection: gymNameList.first,
+                onSelected: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    selectedValue = value!;
+                  });
+                },
+                dropdownMenuEntries: gymNameList.map((String value) {
+                  return DropdownMenuEntry<String>(
+                    value: value,
+                    label: value,
+                  );
+                }).toList(),
+              ),
+      ],
     );
   }
 
@@ -110,18 +228,17 @@ class SignUpPage extends StatelessWidget {
         Text(
           'Password',
           style: GoogleFonts.raleway(
-            textStyle: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.normal,
-                fontSize: 16),
-          ),
+              textStyle: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16)),
         ),
         const SizedBox(
           height: 16,
         ),
         TextField(
-          controller: _passwordController,
           obscureText: true,
+          controller: _passwordController,
           decoration: InputDecoration(
             filled: true,
             fillColor: const Color(0xffF7F7F9),
@@ -136,7 +253,7 @@ class SignUpPage extends StatelessWidget {
     );
   }
 
-  Widget _signup(BuildContext context) {
+  Widget _signin(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -147,13 +264,13 @@ class SignUpPage extends StatelessWidget {
         elevation: 0,
       ),
       onPressed: () async {
-        await AuthService().signup(
+        await AuthService().signin(
             email: _emailController.text,
             password: _passwordController.text,
             context: context);
       },
       child: const Text(
-        "SIGN UP",
+        "LOGIN",
         style: TextStyle(
           fontSize: 20,
           color: Colors.white,
@@ -162,7 +279,7 @@ class SignUpPage extends StatelessWidget {
     );
   }
 
-  Widget _signin(BuildContext context) {
+  Widget _signup(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: RichText(
@@ -170,14 +287,14 @@ class SignUpPage extends StatelessWidget {
         text: TextSpan(
           children: [
             const TextSpan(
-              text: "Already Have Account? ",
+              text: "New User? ",
               style: TextStyle(
                   color: Color(0xff6A6A6A),
                   fontWeight: FontWeight.normal,
                   fontSize: 16),
             ),
             TextSpan(
-              text: "Log In",
+              text: "Create Account",
               style: const TextStyle(
                   color: Color(0xff1A1D1E),
                   fontWeight: FontWeight.normal,
@@ -186,7 +303,7 @@ class SignUpPage extends StatelessWidget {
                 ..onTap = () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginPage2()),
+                    MaterialPageRoute(builder: (context) => SignUpPage()),
                   );
                 },
             ),

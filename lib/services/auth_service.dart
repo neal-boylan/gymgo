@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,8 +12,10 @@ class AuthService {
       required String password,
       required BuildContext context}) async {
     try {
-      await FirebaseAuth.instance
+      final userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+
+      addGymToDb(userCredential.user?.uid);
 
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacement(
@@ -32,6 +35,18 @@ class AuthService {
         textColor: Colors.white,
         fontSize: 14.0,
       );
+    }
+  }
+
+  Future<void> addGymToDb(String? userId) async {
+    try {
+      await FirebaseFirestore.instance.collection("gyms").doc(userId).set({
+        "name": userId,
+        "gymId": userId,
+        "phone": 1234567,
+      });
+    } on Exception catch (e) {
+      print(e);
     }
   }
 

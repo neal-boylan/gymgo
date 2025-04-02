@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/login_page.dart';
+import 'package:gymgo/pages/login_page_2.dart';
 
 import 'pages/home_page.dart';
 
@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.data != null) {
             return MyHomePage();
           }
-          return LoginPage();
+          return LoginPage2();
         },
       ),
     );

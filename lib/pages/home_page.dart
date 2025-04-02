@@ -234,10 +234,6 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             onPressed: () async {
-              // await signOutUser();
-              // if (!context.mounted) return;
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => LoginPage()));
               await AuthService().signout(context: context);
             },
             icon: const Icon(
