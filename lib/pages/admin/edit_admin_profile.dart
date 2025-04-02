@@ -5,31 +5,31 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/change_password.dart';
 
-import 'home_page.dart';
+import '../home_page.dart';
 
-class EditCoachProfile extends StatefulWidget {
-  const EditCoachProfile({super.key});
+class EditAdminProfile extends StatefulWidget {
+  const EditAdminProfile({super.key});
 
   @override
-  State<EditCoachProfile> createState() => _EditCoachProfileState();
+  State<EditAdminProfile> createState() => _EditAdminProfileState();
 }
 
-class _EditCoachProfileState extends State<EditCoachProfile> {
+class _EditAdminProfileState extends State<EditAdminProfile> {
   final String userId = FirebaseAuth.instance.currentUser!.uid;
   bool _isButtonVisible = false;
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
+  final gymNameController = TextEditingController();
+  final phoneController = TextEditingController();
   final passwordController = TextEditingController();
 
-  var firstName = "";
-  var lastName = "";
+  var gymName = "";
+  var phoneNumber = "";
 
   bool coach = false;
 
   @override
   void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
+    gymNameController.dispose();
+    phoneController.dispose();
     super.dispose();
   }
 
@@ -37,17 +37,17 @@ class _EditCoachProfileState extends State<EditCoachProfile> {
   void initState() {
     super.initState();
     fetchData();
-    firstNameController.addListener(() {
+    gymNameController.addListener(() {
       setState(() {
-        _isButtonVisible = firstNameController.text.isNotEmpty ||
-            lastNameController.text.isNotEmpty;
+        _isButtonVisible = gymNameController.text.isNotEmpty ||
+            phoneController.text.isNotEmpty;
       });
     });
 
-    lastNameController.addListener(() {
+    phoneController.addListener(() {
       setState(() {
-        _isButtonVisible = lastNameController.text.isNotEmpty ||
-            firstNameController.text.isNotEmpty;
+        _isButtonVisible = phoneController.text.isNotEmpty ||
+            gymNameController.text.isNotEmpty;
       });
     });
   }
@@ -60,8 +60,8 @@ class _EditCoachProfileState extends State<EditCoachProfile> {
         Map<String, dynamic>? data = docSnapshot.data();
 
         setState(() {
-          firstName = data?['firstName'];
-          lastName = data?['lastName'];
+          gymName = data?['firstName'];
+          phoneNumber = data?['lastName'];
         });
       }
     } catch (e) {
@@ -76,27 +76,27 @@ class _EditCoachProfileState extends State<EditCoachProfile> {
 
   Future<void> updateDb(String? userId) async {
     try {
-      if (firstNameController.text.trim() == "") {
+      if (gymNameController.text.trim() == "") {
         await FirebaseFirestore.instance
             .collection("coaches")
             .doc(userId)
             .update({
-          "lastName": lastNameController.text.trim(),
+          "lastName": phoneController.text.trim(),
         });
-      } else if (lastNameController.text.trim() == "") {
+      } else if (phoneController.text.trim() == "") {
         await FirebaseFirestore.instance
             .collection("coaches")
             .doc(userId)
             .update({
-          "firstName": firstNameController.text.trim(),
+          "firstName": gymNameController.text.trim(),
         });
       } else {
         await FirebaseFirestore.instance
             .collection("coaches")
             .doc(userId)
             .update({
-          "firstName": firstNameController.text.trim(),
-          "lastName": lastNameController.text.trim(),
+          "firstName": gymNameController.text.trim(),
+          "lastName": phoneController.text.trim(),
         });
       }
 
@@ -145,9 +145,9 @@ class _EditCoachProfileState extends State<EditCoachProfile> {
                   ),
                   const SizedBox(height: 5),
                   TextField(
-                    controller: firstNameController,
+                    controller: gymNameController,
                     decoration: InputDecoration(
-                      hintText: firstName,
+                      hintText: gymName,
                     ),
                     maxLines: 1,
                     keyboardType: TextInputType.text,
@@ -161,9 +161,9 @@ class _EditCoachProfileState extends State<EditCoachProfile> {
                   ),
                   const SizedBox(height: 5),
                   TextField(
-                    controller: lastNameController,
+                    controller: phoneController,
                     decoration: InputDecoration(
-                      hintText: lastName,
+                      hintText: phoneNumber,
                     ),
                     maxLines: 1,
                     keyboardType: TextInputType.text,
@@ -180,8 +180,8 @@ class _EditCoachProfileState extends State<EditCoachProfile> {
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary),
                         onPressed: () async {
-                          firstNameController.text.trim() != firstName ||
-                                  lastNameController.text.trim() != lastName
+                          gymNameController.text.trim() != gymName ||
+                                  phoneController.text.trim() != phoneNumber
                               ? updateDb(userId)
                               : null;
 

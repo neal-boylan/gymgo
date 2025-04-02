@@ -5,16 +5,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/change_password.dart';
 
-import 'home_page.dart';
+import '../home_page.dart';
 
-class EditMemberProfile extends StatefulWidget {
-  const EditMemberProfile({super.key});
+class EditCoachProfile extends StatefulWidget {
+  const EditCoachProfile({super.key});
 
   @override
-  State<EditMemberProfile> createState() => _EditMemberProfileState();
+  State<EditCoachProfile> createState() => _EditCoachProfileState();
 }
 
-class _EditMemberProfileState extends State<EditMemberProfile> {
+class _EditCoachProfileState extends State<EditCoachProfile> {
   final String userId = FirebaseAuth.instance.currentUser!.uid;
   bool _isButtonVisible = false;
   final firstNameController = TextEditingController();
@@ -54,7 +54,7 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
 
   Future<void> fetchData() async {
     try {
-      var collection = FirebaseFirestore.instance.collection('members');
+      var collection = FirebaseFirestore.instance.collection('coaches');
       var docSnapshot = await collection.doc(userId).get();
       if (docSnapshot.exists) {
         Map<String, dynamic>? data = docSnapshot.data();
@@ -78,21 +78,21 @@ class _EditMemberProfileState extends State<EditMemberProfile> {
     try {
       if (firstNameController.text.trim() == "") {
         await FirebaseFirestore.instance
-            .collection("members")
+            .collection("coaches")
             .doc(userId)
             .update({
           "lastName": lastNameController.text.trim(),
         });
       } else if (lastNameController.text.trim() == "") {
         await FirebaseFirestore.instance
-            .collection("members")
+            .collection("coaches")
             .doc(userId)
             .update({
           "firstName": firstNameController.text.trim(),
         });
       } else {
         await FirebaseFirestore.instance
-            .collection("members")
+            .collection("coaches")
             .doc(userId)
             .update({
           "firstName": firstNameController.text.trim(),

@@ -3,13 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/admin/add_new_member.dart';
-import 'package:gymgo/pages/member_list.dart';
-import 'package:gymgo/pages/view_coach_profile.dart';
-import 'package:gymgo/pages/view_member_profile.dart';
+import 'package:gymgo/pages/admin/member_coach_list.dart';
+import 'package:gymgo/pages/admin/view_admin_profile.dart';
+import 'package:gymgo/pages/admin/view_member_profile.dart';
+import 'package:gymgo/pages/coach/view_coach_profile.dart';
 
 import '../services/auth_service.dart';
 import 'admin/add_new_class.dart';
 import 'class_list.dart';
+import 'coach/member_list.dart';
 import 'member/workout_list.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -62,11 +64,12 @@ class _MyHomePageState extends State<MyHomePage> {
       member: false,
       coach: false,
     ),
-    const MemberList(
+    const MemberCoachList(
       coach: false,
-      member: false,
     ),
-    const AddNewMember(),
+    ViewAdminProfile(
+      docId: FirebaseAuth.instance.currentUser!.uid,
+    ),
   ];
 
   final List<Widget> coachPages = [
@@ -76,12 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
     const MemberList(
       coach: true,
-      member: false,
     ),
     ViewCoachProfile(
       docId: FirebaseAuth.instance.currentUser!.uid,
       coach: true,
-      member: false,
     ),
   ];
 
@@ -111,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     DateTime nowDateTime = nowTimestamp.toDate();
     DateTime pastDateTime = nowDateTime.add(Duration(days: -7));
     Timestamp pastTimestamp = Timestamp.fromDate(pastDateTime);
-    DateTime futureDateTime = nowDateTime.add(Duration(days: 7));
+    DateTime futureDateTime = nowDateTime.add(Duration(days: 8));
     Timestamp futureTimestamp = Timestamp.fromDate(futureDateTime);
 
     // getting all the documents from fb snapshot
@@ -158,6 +159,8 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           newStartDateTime = newStartDateTime.add(Duration(days: 7));
           newStartTimestamp = Timestamp.fromDate(newStartDateTime);
+          newEndDateTime = endDateTime.add(Duration(days: 7));
+          newEndTimestamp = Timestamp.fromDate(newEndDateTime);
         } catch (e) {
           print(e);
         }
@@ -180,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
 
-    queryValues();
+    // queryValues();
   }
 
   String _getAppBarTitle(int page) {

@@ -1,22 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/view_member_profile.dart';
+import 'package:gymgo/pages/admin/view_member_profile.dart';
 import 'package:intl/intl.dart';
 
-import '../widgets/member_card.dart';
+import '../../widgets/member_card.dart';
 
 class MemberList extends StatefulWidget {
   final bool coach;
-  final bool member;
-  const MemberList({super.key, required this.coach, required this.member});
+  const MemberList({super.key, required this.coach});
   @override
   State<MemberList> createState() => _MemberListState();
 }
 
 class _MemberListState extends State<MemberList> {
-  DateTime selectedDate = DateTime.now();
-  DateTime currentDate = DateTime.now();
+  bool showCoaches = true;
 
   @override
   void initState() {
@@ -65,7 +63,7 @@ class _MemberListState extends State<MemberList> {
                                     builder: (context) => ViewMemberProfile(
                                       docId: docId,
                                       coach: widget.coach,
-                                      member: widget.member,
+                                      member: false,
                                     ),
                                   ),
                                 );

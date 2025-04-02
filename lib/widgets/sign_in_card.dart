@@ -5,21 +5,30 @@ class SignInCard extends StatefulWidget {
   final String firstName;
   final String lastName;
   final String memberId;
+  final bool attended;
   final String docId;
 
-  const SignInCard(
-      {super.key,
-      required this.firstName,
-      required this.lastName,
-      required this.memberId,
-      required this.docId});
+  const SignInCard({
+    super.key,
+    required this.firstName,
+    required this.lastName,
+    required this.memberId,
+    required this.attended,
+    required this.docId,
+  });
 
   @override
   State<SignInCard> createState() => _SignInCardState();
 }
 
 class _SignInCardState extends State<SignInCard> {
-  bool isChecked = false;
+  late bool isChecked;
+
+  @override
+  void initState() {
+    super.initState();
+    isChecked = widget.attended; // Set initial value from parent
+  }
 
   Future<void> addMemberToClassDb(String memberId) async {
     try {
@@ -83,7 +92,7 @@ class _SignInCardState extends State<SignInCard> {
               Transform.scale(
                 scale: 1.5,
                 child: Checkbox(
-                  value: isChecked,
+                  value: isChecked, // widget.attended,
                   onChanged: (bool? value) {
                     setState(() {
                       isChecked = value!;

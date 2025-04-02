@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/edit_member_profile.dart';
+import 'package:gymgo/pages/member/edit_member_profile.dart';
 
 class ViewMemberProfile extends StatefulWidget {
   final String docId;

@@ -124,6 +124,7 @@ class _ClassListState extends State<ClassList> {
                                                 )
                                               : ViewClassSignins(
                                                   docId: docId,
+                                                  coach: widget.coach,
                                                 ),
                                         ),
                                       )

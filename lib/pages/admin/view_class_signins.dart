@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/admin/edit_class.dart';
 
 import '../../widgets/sign_in_card.dart';
+import 'edit_class.dart';
 
 class ViewClassSignins extends StatefulWidget {
   final String docId;
-  const ViewClassSignins({super.key, required this.docId});
+  final bool coach;
+  const ViewClassSignins({super.key, required this.docId, required this.coach});
 
   @override
   State<ViewClassSignins> createState() => _ViewClassSigninsState(docId);
@@ -14,9 +15,10 @@ class ViewClassSignins extends StatefulWidget {
 
 class _ViewClassSigninsState extends State<ViewClassSignins> {
   final String docId;
+  double listScreenSize = 0.75;
   _ViewClassSigninsState(this.docId);
-  List<dynamic> items = [];
-  List<dynamic> memberList = [];
+  List<dynamic> signInList = [];
+  List<dynamic> attendedList = [];
 
   @override
   void initState() {
@@ -34,9 +36,10 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
 
       if (doc.exists) {
         setState(() {
-          items = List.from(doc['signins']); // Extract and store in state
+          signInList = List.from(doc['signins']);
+          attendedList = List.from(doc['attended']);
         });
-        print('items: $items');
+        print('items: $signInList');
       }
     } catch (e) {
       print("Error fetching data: $e");
@@ -50,15 +53,23 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
         title: const Text('Class Signins'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Center(
+      body: SafeArea(
         child: Column(
           children: [
-            items.isEmpty
-                ? Center(child: const Text('No SignIns')) // Loading indicator
+            signInList.isEmpty
+                ? SizedBox(
+                    height: MediaQuery.of(context).size.height * listScreenSize,
+                    child: Center(
+                      child: const Text(
+                        'No SignIns',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  ) // Loading indicator
                 : StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection("members")
-                        .where(FieldPath.documentId, whereIn: items)
+                        .where(FieldPath.documentId, whereIn: signInList)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -67,40 +78,51 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
                         );
                       }
                       if (snapshot.data!.docs.isEmpty) {
-                        return Center(child: const Text('No SignIns'));
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height *
+                              listScreenSize,
+                          child: Center(
+                            child: const Text(
+                              'No SignIns',
+                              style: TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        );
                       } else {
-                        return Expanded(
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height *
+                              listScreenSize,
                           child: ListView.builder(
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
                               return Row(
                                 children: [
-                                  // Expanded(
-                                  //   child: ClassCard(
-                                  //     color:
-                                  //         Theme.of(context).colorScheme.primary,
-                                  //     title: snapshot.data!.docs[index]
-                                  //         .data()['firstName'],
-                                  //     coach: snapshot.data!.docs[index]
-                                  //         .data()['lastName'],
-                                  //     startTime: "",
-                                  //     endTime: "",
-                                  //     signins: 0,
-                                  //     size: 0,
-                                  //     uid: "",
-                                  //     onTap: () {},
-                                  //   ),
-                                  // ),
                                   Expanded(
-                                    child: SignInCard(
-                                      firstName: snapshot.data!.docs[index]
-                                          .data()['firstName'],
-                                      lastName: snapshot.data!.docs[index]
-                                          .data()['lastName'],
-                                      memberId: snapshot.data!.docs[index]
-                                          .data()['userId'],
-                                      docId: docId,
-                                    ),
+                                    child: attendedList.contains(snapshot
+                                            .data!.docs[index]
+                                            .data()['userId'])
+                                        ? SignInCard(
+                                            firstName: snapshot
+                                                .data!.docs[index]
+                                                .data()['firstName'],
+                                            lastName: snapshot.data!.docs[index]
+                                                .data()['lastName'],
+                                            memberId: snapshot.data!.docs[index]
+                                                .data()['userId'],
+                                            docId: docId,
+                                            attended: true,
+                                          )
+                                        : SignInCard(
+                                            firstName: snapshot
+                                                .data!.docs[index]
+                                                .data()['firstName'],
+                                            lastName: snapshot.data!.docs[index]
+                                                .data()['lastName'],
+                                            memberId: snapshot.data!.docs[index]
+                                                .data()['userId'],
+                                            docId: docId,
+                                            attended: false,
+                                          ),
                                   ),
                                 ],
                               );
@@ -110,49 +132,36 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
                       }
                     },
                   ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  bottom: 50.0,
-                ),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditClass(docId: docId),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(8),
+              color: Colors.white, // Background color for contrast
+              child: widget.coach
+                  ? null
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditClass(docId: docId),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'EDIT CLASS',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
                         ),
-                      );
-                    },
-                    child: const Text(
-                      'EDIT CLASS',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
                       ),
                     ),
-                  ),
-                ),
-              ),
             ),
           ],
         ),
       ),
-
-      // ListView.builder(
-      //         itemCount: items.length,
-      //         itemBuilder: (context, index) {
-      //           return ListTile(
-      //             title: Text(items[index].toString()), // Display each item
-      //           );
-      //         },
-      //       ),
     );
   }
 }

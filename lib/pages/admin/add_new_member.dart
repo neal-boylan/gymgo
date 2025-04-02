@@ -3,6 +3,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../home_page.dart';
+
 class AddNewMember extends StatefulWidget {
   const AddNewMember({super.key});
 
@@ -108,79 +110,113 @@ class _AddNewMemberState extends State<AddNewMember> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add New Member'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+    return GestureDetector(
+      onTap: () {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text('Add New Member'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const SizedBox(height: 10),
-              TextField(
-                controller: firstNameController,
-                decoration: const InputDecoration(
-                  hintText: 'First Name',
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    TextField(
+                      keyboardType: TextInputType.text,
+                      controller: firstNameController,
+                      decoration: const InputDecoration(
+                        label: Text('First Name'),
+                      ),
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      keyboardType: TextInputType.text,
+                      controller: lastNameController,
+                      decoration: const InputDecoration(
+                        label: Text('Last Name'),
+                      ),
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        label: Text('Email'),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: true,
+                      controller: passwordController,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        label: Text('Password'),
+                      ),
+                      maxLines: 1,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Assign Coaching privelages?',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Checkbox(
+                          value: coach,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              coach = value!;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                maxLines: 1,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: lastNameController,
-                decoration: const InputDecoration(
-                  hintText: 'Last Name',
-                ),
-                maxLines: 1,
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                obscureText: true,
-                controller: passwordController,
-                enableSuggestions: false,
-                autocorrect: false,
-                decoration: const InputDecoration(
-                  hintText: 'Password',
-                ),
-                maxLines: 1,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Assign Coaching privelages?',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Checkbox(
-                    value: coach,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        coach = value!;
-                      });
-                    },
-                  ),
-                ],
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary),
-                onPressed: () async {
-                  await createUserWithEmailAndPassword();
-                },
-                child: const Text(
-                  'ADD MEMBER',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                color: Colors.white,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary),
+                  onPressed: () async {
+                    await createUserWithEmailAndPassword();
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyHomePage(),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'ADD MEMBER',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

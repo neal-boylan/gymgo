@@ -97,11 +97,6 @@ class _ViewWorkoutState extends State<ViewWorkout> {
                             ),
                           ],
                         );
-                        ListTile(
-                          // title: Text(exercises![index].toString()),
-                          title: Text(
-                              '${exercise[index]} ${sets[index]} x ${reps[index]} ${weight[index]}kg'),
-                        );
                       },
                     ),
                   ),

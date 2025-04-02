@@ -144,6 +144,20 @@ class _EditClassState extends State<EditClass> {
     }
   }
 
+  Future<void> deleteClassFromnDb() async {
+    try {
+      print("deleting class: $docId");
+      await FirebaseFirestore.instance
+          .collection("classes")
+          .doc(docId)
+          .delete();
+
+      print("class $docId deleted");
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -154,109 +168,176 @@ class _EditClassState extends State<EditClass> {
         }
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text('Edit Class'),
           backgroundColor: Theme.of(context).primaryColor,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Container(
-          height: 50,
-          margin: const EdgeInsets.all(10),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary),
-            onPressed: () async {
-              await editClassInDb();
-              if (context.mounted) {
-                Navigator.pop(context);
-              }
-              if (context.mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MyHomePage(),
-                  ),
-                );
-              }
-            },
-            child: const Text(
-              'SUBMIT',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Description",
-                  ),
-                ),
-                const SizedBox(height: 5),
-                TextFormField(
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    hintText: title,
-                    // label: Text('Title'),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Coach",
-                  ),
-                ),
-                const SizedBox(height: 5),
-                coachNameList.isEmpty
-                    ? CircularProgressIndicator() // Show loading indicator
-                    : DropdownMenu<String>(
-                        label: Text('Coach'),
-                        expandedInsets: EdgeInsets.zero,
-                        initialSelection: coachNameList.first,
-                        onSelected: (String? value) {
-                          // This is called when the user selects an item.
-                          setState(() {
-                            selectedValue = value!;
-                          });
-                        },
-                        dropdownMenuEntries: coachNameList.map((String value) {
-                          return DropdownMenuEntry<String>(
-                            value: value,
-                            label: value,
-                          );
-                        }).toList(),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        // floatingActionButton: Container(
+        //   height: 50,
+        //   margin: const EdgeInsets.all(10),
+        //   child: ElevatedButton(
+        //     style: ElevatedButton.styleFrom(
+        //         backgroundColor: Theme.of(context).colorScheme.primary),
+        //     onPressed: () async {
+        //       await editClassInDb();
+        //       if (context.mounted) {
+        //         Navigator.pop(context);
+        //       }
+        //       if (context.mounted) {
+        //         Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //             builder: (context) => MyHomePage(),
+        //           ),
+        //         );
+        //       }
+        //     },
+        //     child: const Text(
+        //       'SUBMIT',
+        //       style: TextStyle(
+        //         fontSize: 16,
+        //         color: Colors.white,
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.66,
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Description",
                       ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Class Size",
-                  ),
-                ),
-                const SizedBox(height: 5),
-                TextField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
+                    ),
+                    const SizedBox(height: 5),
+                    TextFormField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        hintText: title,
+                        // label: Text('Title'),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Coach",
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    coachNameList.isEmpty
+                        ? CircularProgressIndicator() // Show loading indicator
+                        : DropdownMenu<String>(
+                            label: Text('Coach'),
+                            expandedInsets: EdgeInsets.zero,
+                            initialSelection: coachNameList.first,
+                            onSelected: (String? value) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                selectedValue = value!;
+                              });
+                            },
+                            dropdownMenuEntries:
+                                coachNameList.map((String value) {
+                              return DropdownMenuEntry<String>(
+                                value: value,
+                                label: value,
+                              );
+                            }).toList(),
+                          ),
+                    const SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Class Size",
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    TextField(
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      keyboardType: TextInputType.number,
+                      controller: sizeController,
+                      decoration: InputDecoration(
+                        hintText: classSize.toString(),
+                      ),
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 10),
                   ],
-                  keyboardType: TextInputType.number,
-                  controller: sizeController,
-                  decoration: InputDecoration(
-                    hintText: classSize.toString(),
-                  ),
-                  maxLines: 1,
                 ),
-                const SizedBox(height: 10),
-              ],
-            ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                color: Colors.white, // Background color for contrast
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary),
+                  onPressed: () async {
+                    await editClassInDb();
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyHomePage(),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'SAVE CHANGES',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(8),
+                color: Colors.white, // Background color for contrast
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.error),
+                  onPressed: () async {
+                    await deleteClassFromnDb();
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyHomePage(),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'DELETE CLASS',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

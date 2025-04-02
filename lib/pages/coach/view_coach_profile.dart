@@ -6,12 +6,11 @@ import 'edit_coach_profile.dart';
 class ViewCoachProfile extends StatefulWidget {
   final String docId;
   final bool coach;
-  final bool member;
-  const ViewCoachProfile(
-      {super.key,
-      required this.docId,
-      required this.coach,
-      required this.member});
+  const ViewCoachProfile({
+    super.key,
+    required this.docId,
+    required this.coach,
+  });
 
   @override
   State<ViewCoachProfile> createState() => _ViewCoachProfileState(docId);
