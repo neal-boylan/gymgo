@@ -125,7 +125,7 @@ class _LoginPage2State extends State<LoginPage2> {
                 ),
                 _gymPicker(),
                 const SizedBox(
-                  height: 40,
+                  height: 20,
                 ),
                 _emailAddress(),
                 const SizedBox(
@@ -133,7 +133,7 @@ class _LoginPage2State extends State<LoginPage2> {
                 ),
                 _password(),
                 const SizedBox(
-                  height: 50,
+                  height: 20,
                 ),
                 _signin(context),
               ],
@@ -149,21 +149,10 @@ class _LoginPage2State extends State<LoginPage2> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Select your Gym',
-          style: GoogleFonts.raleway(
-              textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16)),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
         gymNameList.isEmpty
             ? CircularProgressIndicator() // Show loading indicator
             : DropdownMenu<String>(
-                label: Text('Coach'),
+                label: Text('Find Your Gym'),
                 expandedInsets: EdgeInsets.zero,
                 initialSelection: gymNameList.first,
                 onSelected: (String? value) {
@@ -188,22 +177,12 @@ class _LoginPage2State extends State<LoginPage2> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Email Address',
-          style: GoogleFonts.raleway(
-              textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16)),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
         TextField(
           controller: _emailController,
           decoration: InputDecoration(
             filled: true,
-            hintText: 'email@gmail.com',
+            label: Text('Email Address'),
+            // hintText: 'email@gmail.com',
             hintStyle: const TextStyle(
                 color: Color(0xff6A6A6A),
                 fontWeight: FontWeight.normal,
@@ -225,21 +204,11 @@ class _LoginPage2State extends State<LoginPage2> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Password',
-          style: GoogleFonts.raleway(
-              textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16)),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
         TextField(
           obscureText: true,
           controller: _passwordController,
           decoration: InputDecoration(
+            label: Text('Password'),
             filled: true,
             fillColor: const Color(0xffF7F7F9),
             border: OutlineInputBorder(
@@ -281,20 +250,20 @@ class _LoginPage2State extends State<LoginPage2> {
 
   Widget _signup(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 50),
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
           children: [
             const TextSpan(
-              text: "New User? ",
+              text: "Gym Owner? Click ",
               style: TextStyle(
                   color: Color(0xff6A6A6A),
                   fontWeight: FontWeight.normal,
                   fontSize: 16),
             ),
             TextSpan(
-              text: "Create Account",
+              text: "HERE",
               style: const TextStyle(
                   color: Color(0xff1A1D1E),
                   fontWeight: FontWeight.normal,
@@ -306,6 +275,13 @@ class _LoginPage2State extends State<LoginPage2> {
                     MaterialPageRoute(builder: (context) => SignUpPage()),
                   );
                 },
+            ),
+            const TextSpan(
+              text: " to register with GYMGO",
+              style: TextStyle(
+                  color: Color(0xff6A6A6A),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16),
             ),
           ],
         ),

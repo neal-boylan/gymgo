@@ -8,14 +8,15 @@ import '../pages/login_page.dart';
 
 class AuthService {
   Future<void> signup(
-      {required String email,
+      {required String gymName,
+      required String email,
       required String password,
       required BuildContext context}) async {
     try {
       final userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      addGymToDb(userCredential.user?.uid);
+      addGymToDb(userCredential.user?.uid, gymName, email);
 
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacement(
@@ -38,12 +39,12 @@ class AuthService {
     }
   }
 
-  Future<void> addGymToDb(String? userId) async {
+  Future<void> addGymToDb(String? userId, String gymName, String email) async {
     try {
       await FirebaseFirestore.instance.collection("gyms").doc(userId).set({
-        "name": userId,
+        "name": gymName,
+        "email": email,
         "gymId": userId,
-        "phone": 1234567,
       });
     } on Exception catch (e) {
       print(e);
