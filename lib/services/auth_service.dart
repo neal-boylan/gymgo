@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../pages/home_page.dart';
-import '../pages/login_page.dart';
+import '../pages/login_page_2.dart';
+import '../pages/static_variable.dart';
 
 class AuthService {
   Future<void> signup(
@@ -17,12 +18,13 @@ class AuthService {
           .createUserWithEmailAndPassword(email: email, password: password);
 
       addGymToDb(userCredential.user?.uid, gymName, email);
-
       await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => const MyHomePage()));
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => MyHomePage(),
+        ),
+      );
     } on FirebaseAuthException catch (e) {
       String message = '';
       if (e.code == 'email-already-in-use') {
@@ -51,19 +53,89 @@ class AuthService {
     }
   }
 
+  Future<bool> checkIfUserIsGymMember(String email, String gym) async {
+    try {
+      print("email: $email");
+      print("gym: $gym");
+      var gymId = await getGymId(gym);
+      print("gymId: $gymId");
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('members')
+          .where('email', isEqualTo: email)
+          .where('gymId', isEqualTo: gymId)
+          .limit(1)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Selected gym does not have user with this email",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      return false;
+    }
+  }
+
+  Future<String?> getGymId(String gymName) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('gyms')
+          .where('name', isEqualTo: gymName)
+          .limit(1) // Get only one document
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        return doc['gymId'];
+      } else {
+        print("No gym found");
+        return null;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
+
   Future<void> signin(
       {required String email,
       required String password,
-      required BuildContext context}) async {
+      required BuildContext context,
+      required String gymName}) async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      var userInGym = await checkIfUserIsGymMember(email, gymName);
 
-      await Future.delayed(const Duration(seconds: 1));
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => const MyHomePage()));
+      if (userInGym) {
+        StaticVariable.gymIdVariable = await getGymId(gymName);
+
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+
+        await Future.delayed(
+          const Duration(seconds: 1),
+        );
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => MyHomePage(),
+            ),
+          );
+        }
+      } else {
+        Fluttertoast.showToast(
+          msg: "Selected gym does not have user with this email",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.SNACKBAR,
+          backgroundColor: Colors.black54,
+          textColor: Colors.white,
+          fontSize: 14.0,
+        );
+      }
     } on FirebaseAuthException catch (e) {
       print('e.code: ${e.code}');
       print('e: $e');
@@ -94,6 +166,6 @@ class AuthService {
     await FirebaseAuth.instance.signOut();
     await Future.delayed(const Duration(seconds: 1));
     Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+        MaterialPageRoute(builder: (BuildContext context) => LoginPage2()));
   }
 }

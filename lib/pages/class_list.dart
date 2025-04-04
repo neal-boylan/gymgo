@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gymgo/pages/admin/view_class_signins.dart';
+import 'package:gymgo/pages/static_variable.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:intl/intl.dart';
 
@@ -12,7 +13,11 @@ import 'member/signin_class.dart';
 class ClassList extends StatefulWidget {
   final bool member;
   final bool coach;
-  const ClassList({super.key, required this.member, required this.coach});
+  const ClassList({
+    super.key,
+    required this.member,
+    required this.coach,
+  });
   @override
   State<ClassList> createState() => _ClassListState();
 }
@@ -21,14 +26,53 @@ class _ClassListState extends State<ClassList> {
   DateTime selectedDate =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   DateTime currentDate = DateTime.now();
+  String _gymId = "";
 
   @override
   void initState() {
     super.initState();
+
+    getGymId(FirebaseAuth.instance.currentUser!.uid).then((updatedVal) {
+      setState(() {
+        _gymId = updatedVal!;
+      });
+    });
+  }
+
+  Future<String?> getGymId(String userId) async {
+    try {
+      DocumentSnapshot doc;
+      if (widget.member) {
+        doc = await FirebaseFirestore.instance
+            .collection('members')
+            .doc(userId)
+            .get();
+      } else if (widget.coach) {
+        doc = await FirebaseFirestore.instance
+            .collection('coaches')
+            .doc(userId)
+            .get();
+      } else {
+        doc = await FirebaseFirestore.instance
+            .collection('gyms')
+            .doc(userId)
+            .get();
+      }
+
+      if (doc.exists) {
+        return doc['gymId'];
+      } else {
+        return "No gym found";
+      }
+    } catch (e) {
+      print("Error fetching document: $e");
+      return null;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print("StaticVariable.gymIdVariable: ${StaticVariable.gymIdVariable}");
     return Center(
       child: Column(
         children: [
@@ -44,6 +88,7 @@ class _ClassListState extends State<ClassList> {
             stream: widget.coach
                 ? FirebaseFirestore.instance
                     .collection("classes")
+                    .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
                     .where('startTime', isGreaterThanOrEqualTo: selectedDate)
                     .where('startTime',
                         isLessThan: DateTime(selectedDate.year,
@@ -54,6 +99,7 @@ class _ClassListState extends State<ClassList> {
                     .snapshots()
                 : FirebaseFirestore.instance
                     .collection("classes")
+                    .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
                     .where('startTime', isGreaterThanOrEqualTo: selectedDate)
                     .where('startTime',
                         isLessThan: DateTime(selectedDate.year,

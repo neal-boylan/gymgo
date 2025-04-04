@@ -174,7 +174,8 @@ class LoginPage extends StatelessWidget {
         await AuthService().signin(
             email: _emailController.text,
             password: _passwordController.text,
-            context: context);
+            context: context,
+            gymName: '');
       },
       child: const Text(
         "LOGIN",

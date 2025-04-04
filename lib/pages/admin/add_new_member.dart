@@ -90,7 +90,8 @@ class _AddNewMemberState extends State<AddNewMember> {
           "password": passwordController.text.trim(),
           "firstName": firstNameController.text.trim(),
           "lastName": lastNameController.text.trim(),
-          "userId": userId
+          "userId": userId,
+          "gymId": FirebaseAuth.instance.currentUser?.uid,
         });
       } else {
         await FirebaseFirestore.instance.collection("members").doc(userId).set({
@@ -98,7 +99,8 @@ class _AddNewMemberState extends State<AddNewMember> {
           "password": passwordController.text.trim(),
           "firstName": firstNameController.text.trim(),
           "lastName": lastNameController.text.trim(),
-          "userId": userId
+          "userId": userId,
+          "gymId": FirebaseAuth.instance.currentUser?.uid,
         });
       }
 

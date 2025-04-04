@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gymgo/pages/signup_page.dart';
 
@@ -23,7 +24,7 @@ class _LoginPage2State extends State<LoginPage2> {
   List<Map<String, dynamic>> gymDocList = [];
   List<String> gymNameList = ['1', '2'];
   List<String> gymIdList = [];
-  String? selectedValue;
+  String selectedGym = "";
 
   @override
   void initState() {
@@ -63,7 +64,7 @@ class _LoginPage2State extends State<LoginPage2> {
     setState(() {
       gymList = values;
       if (gymList.isNotEmpty) {
-        selectedValue = gymList.first; // Set default selected value
+        selectedGym = gymList.first; // Set default selected value
       }
     });
     print("fetchDropdownValues got");
@@ -157,19 +158,68 @@ class _LoginPage2State extends State<LoginPage2> {
                 initialSelection: gymNameList.first,
                 onSelected: (String? value) {
                   // This is called when the user selects an item.
-                  setState(() {
-                    selectedValue = value!;
-                  });
-                },
-                dropdownMenuEntries: gymNameList.map((String value) {
-                  return DropdownMenuEntry<String>(
-                    value: value,
-                    label: value,
+                  setState(
+                    () {
+                      selectedGym = value!;
+                    },
                   );
-                }).toList(),
+                },
+                dropdownMenuEntries: gymNameList.map(
+                  (String value) {
+                    return DropdownMenuEntry<String>(
+                      value: value,
+                      label: value,
+                    );
+                  },
+                ).toList(),
               ),
       ],
     );
+  }
+
+  Future<String?> getGymId(String gymName) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('gyms')
+          .where('name', isEqualTo: gymName)
+          .limit(1) // Get only one document
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var doc = querySnapshot.docs.first;
+        print("getGymId: ${doc['gymId']}");
+        return doc['gymId'];
+      } else {
+        print("No gym found");
+        return null;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
+
+  Future<bool> checkIfUserIsGymMember() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('members')
+          .where('email', isEqualTo: _emailController.text)
+          .where('gymId', isEqualTo: getGymId(selectedGym!))
+          .limit(1)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Selected gym does not have user with this email",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      return false;
+    }
   }
 
   Widget _emailAddress() {
@@ -236,6 +286,7 @@ class _LoginPage2State extends State<LoginPage2> {
         await AuthService().signin(
             email: _emailController.text,
             password: _passwordController.text,
+            gymName: selectedGym,
             context: context);
       },
       child: const Text(

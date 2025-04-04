@@ -32,6 +32,38 @@ class _MyHomePageState extends State<MyHomePage> {
   final members = FirebaseFirestore.instance.collection("members");
   bool _member = true;
   bool _coach = true;
+  String _gymId = "";
+
+  Future<String?> getGymId(String userId) async {
+    try {
+      DocumentSnapshot doc;
+      if (_member) {
+        doc = await FirebaseFirestore.instance
+            .collection('members')
+            .doc(userId)
+            .get();
+      } else if (_coach) {
+        doc = await FirebaseFirestore.instance
+            .collection('coaches')
+            .doc(userId)
+            .get();
+      } else {
+        doc = await FirebaseFirestore.instance
+            .collection('gyms')
+            .doc(userId)
+            .get();
+      }
+
+      if (doc.exists) {
+        return doc['gymId'];
+      } else {
+        return "No user found";
+      }
+    } catch (e) {
+      print("Error fetching document: $e");
+      return null;
+    }
+  }
 
   Future<bool> checkIfMember() async {
     QuerySnapshot snap = await FirebaseFirestore.instance
@@ -87,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   final List<Widget> memberPages = [
-    const ClassList(
+    ClassList(
       member: true,
       coach: false,
     ),
@@ -171,6 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+
     checkIfMember().then((updatedVal) {
       setState(() {
         _member = updatedVal;
@@ -183,6 +216,11 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
 
+    getGymId(userId).then((updatedVal) {
+      setState(() {
+        _gymId = updatedVal!;
+      });
+    });
     // queryValues();
   }
 
