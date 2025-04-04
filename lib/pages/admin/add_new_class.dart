@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gymgo/pages/static_variable.dart';
 
 import '../home_page.dart';
 
@@ -35,8 +35,10 @@ class _AddNewClassState extends State<AddNewClass> {
     List<String> nameValues = [];
     List<String> idValues = [];
 
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('coaches').get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('coaches')
+        .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
+        .get();
 
     for (var doc in querySnapshot.docs) {
       if (doc.data() is Map<String, dynamic> &&
@@ -72,8 +74,10 @@ class _AddNewClassState extends State<AddNewClass> {
       String collectionName, String fieldName) async {
     List<String> fieldValues = [];
     try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection(collectionName).get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection(collectionName)
+          .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
+          .get();
       for (var doc in querySnapshot.docs) {
         if (doc.data() is Map<String, dynamic> &&
             (doc.data() as Map<String, dynamic>).containsKey(fieldName)) {
@@ -96,7 +100,6 @@ class _AddNewClassState extends State<AddNewClass> {
   // String dropdownValue = list.first;
 
   final sizeController = TextEditingController();
-  List<String> signIns = [];
   // List<dynamic> coachList = [];
   DateTime startDateTime = DateTime.now();
   DateTime endDateTime = DateTime.now();
@@ -144,8 +147,9 @@ class _AddNewClassState extends State<AddNewClass> {
         "startTime": startDateTime,
         "endTime": endDateTime,
         "weekly": weekly,
-        "signins": signIns,
-        "gymId": FirebaseAuth.instance.currentUser?.uid,
+        "signins": [],
+        "attended": [],
+        "gymId": StaticVariable.gymIdVariable,
       });
 
       final snackBar = SnackBar(

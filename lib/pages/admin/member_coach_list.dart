@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../widgets/member_card.dart';
 import '../coach/view_coach_profile.dart';
+import '../static_variable.dart';
 
 class MemberCoachList extends StatefulWidget {
   final bool coach;
@@ -15,7 +16,7 @@ class MemberCoachList extends StatefulWidget {
 }
 
 class _MemberCoachListState extends State<MemberCoachList> {
-  bool showCoaches = true;
+  bool showCoaches = false;
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class _MemberCoachListState extends State<MemberCoachList> {
               ? StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection("coaches")
+                      .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
                       .orderBy("firstName")
                       .snapshots(),
                   builder: (context, snapshot) {
@@ -99,6 +101,7 @@ class _MemberCoachListState extends State<MemberCoachList> {
               : StreamBuilder(
                   stream: FirebaseFirestore.instance
                       .collection("members")
+                      .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
                       .orderBy("firstName")
                       .snapshots(),
                   builder: (context, snapshot) {

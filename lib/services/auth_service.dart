@@ -8,23 +8,62 @@ import '../pages/login_page_2.dart';
 import '../pages/static_variable.dart';
 
 class AuthService {
+  Future<bool> checkIfGymAlreadyRegistered(String gymName) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('gyms')
+          .where('name', isEqualTo: gymName)
+          .limit(1)
+          .get();
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Selected gym does not have user with this email",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      return false;
+    }
+  }
+
   Future<void> signup(
       {required String gymName,
       required String email,
       required String password,
       required BuildContext context}) async {
     try {
-      final userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      var gymRegistered = await checkIfGymAlreadyRegistered(gymName);
 
-      addGymToDb(userCredential.user?.uid, gymName, email);
-      await Future.delayed(const Duration(seconds: 1));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => MyHomePage(),
-        ),
-      );
+      if (!gymRegistered) {
+        final userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
+
+        addGymToDb(userCredential.user?.uid, gymName, email);
+        await Future.delayed(
+          const Duration(
+            seconds: 1,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => MyHomePage(),
+          ),
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "A gym with this name is already registered",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.SNACKBAR,
+          backgroundColor: Colors.black54,
+          textColor: Colors.white,
+          fontSize: 14.0,
+        );
+      }
     } on FirebaseAuthException catch (e) {
       String message = '';
       if (e.code == 'email-already-in-use') {
@@ -48,6 +87,8 @@ class AuthService {
         "email": email,
         "gymId": userId,
       });
+
+      StaticVariable.gymIdVariable = await getGymId(gymName);
     } on Exception catch (e) {
       print(e);
     }
@@ -59,14 +100,31 @@ class AuthService {
       print("gym: $gym");
       var gymId = await getGymId(gym);
       print("gymId: $gymId");
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      QuerySnapshot membersQuery = await FirebaseFirestore.instance
           .collection('members')
           .where('email', isEqualTo: email)
           .where('gymId', isEqualTo: gymId)
           .limit(1)
           .get();
 
-      return querySnapshot.docs.isNotEmpty;
+      QuerySnapshot coachesQuery = await FirebaseFirestore.instance
+          .collection('coaches')
+          .where('email', isEqualTo: email)
+          .where('gymId', isEqualTo: gymId)
+          .limit(1)
+          .get();
+
+      QuerySnapshot gymsQuery = await FirebaseFirestore.instance
+          .collection('gyms')
+          .where('email', isEqualTo: email)
+          .where('gymId', isEqualTo: gymId)
+          .limit(1)
+          .get();
+
+      return membersQuery.docs.isNotEmpty ||
+          coachesQuery.docs.isNotEmpty ||
+          gymsQuery.docs.isNotEmpty;
+      // return querySnapshot.docs.isNotEmpty;
     } catch (e) {
       Fluttertoast.showToast(
         msg: "Selected gym does not have user with this email",
@@ -165,7 +223,13 @@ class AuthService {
   Future<void> signout({required BuildContext context}) async {
     await FirebaseAuth.instance.signOut();
     await Future.delayed(const Duration(seconds: 1));
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => LoginPage2()));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => LoginPage2(),
+      ),
+    );
+
+    StaticVariable.gymIdVariable = '';
   }
 }

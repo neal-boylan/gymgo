@@ -3,7 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../home_page.dart';
+import '../static_variable.dart';
 
 class AddNewMember extends StatefulWidget {
   const AddNewMember({super.key});
@@ -91,7 +91,7 @@ class _AddNewMemberState extends State<AddNewMember> {
           "firstName": firstNameController.text.trim(),
           "lastName": lastNameController.text.trim(),
           "userId": userId,
-          "gymId": FirebaseAuth.instance.currentUser?.uid,
+          "gymId": StaticVariable.gymIdVariable,
         });
       } else {
         await FirebaseFirestore.instance.collection("members").doc(userId).set({
@@ -100,7 +100,7 @@ class _AddNewMemberState extends State<AddNewMember> {
           "firstName": firstNameController.text.trim(),
           "lastName": lastNameController.text.trim(),
           "userId": userId,
-          "gymId": FirebaseAuth.instance.currentUser?.uid,
+          "gymId": StaticVariable.gymIdVariable,
         });
       }
 
@@ -175,7 +175,7 @@ class _AddNewMemberState extends State<AddNewMember> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Assign Coaching privelages?',
+                          'Assign Coaching privileges?',
                           style: TextStyle(fontSize: 20),
                         ),
                         Checkbox(
@@ -204,14 +204,14 @@ class _AddNewMemberState extends State<AddNewMember> {
                     if (context.mounted) {
                       Navigator.pop(context);
                     }
-                    if (context.mounted) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MyHomePage(),
-                        ),
-                      );
-                    }
+                    // if (context.mounted) {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => MyHomePage(),
+                    //     ),
+                    //   );
+                    // }
                   },
                   child: const Text(
                     'ADD MEMBER',

@@ -5,6 +5,7 @@ import 'package:gymgo/pages/admin/view_member_profile.dart';
 import 'package:intl/intl.dart';
 
 import '../../widgets/member_card.dart';
+import '../static_variable.dart';
 
 class MemberList extends StatefulWidget {
   final bool coach;
@@ -26,9 +27,19 @@ class _MemberListState extends State<MemberList> {
     return Center(
       child: Column(
         children: [
+          const SizedBox(height: 10),
+          Text(
+            "Members",
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
           StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("members")
+                .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
                 .orderBy("firstName")
                 .snapshots(),
             builder: (context, snapshot) {

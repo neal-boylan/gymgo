@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gymgo/pages/signup_page.dart';
 
@@ -67,7 +66,6 @@ class _LoginPage2State extends State<LoginPage2> {
         selectedGym = gymList.first; // Set default selected value
       }
     });
-    print("fetchDropdownValues got");
   }
 
   // Function to get field values from Firestore
@@ -84,7 +82,6 @@ class _LoginPage2State extends State<LoginPage2> {
               .add(doc[fieldName].toString()); // Convert to string if needed
         }
       }
-      print("getFieldValues got");
     } catch (e) {
       print("Error fetching field values: $e");
     }
@@ -104,6 +101,11 @@ class _LoginPage2State extends State<LoginPage2> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         bottomNavigationBar: _signup(context),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          toolbarHeight: 50,
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -175,51 +177,6 @@ class _LoginPage2State extends State<LoginPage2> {
               ),
       ],
     );
-  }
-
-  Future<String?> getGymId(String gymName) async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('gyms')
-          .where('name', isEqualTo: gymName)
-          .limit(1) // Get only one document
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        var doc = querySnapshot.docs.first;
-        print("getGymId: ${doc['gymId']}");
-        return doc['gymId'];
-      } else {
-        print("No gym found");
-        return null;
-      }
-    } catch (e) {
-      print("Error: $e");
-      return null;
-    }
-  }
-
-  Future<bool> checkIfUserIsGymMember() async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('members')
-          .where('email', isEqualTo: _emailController.text)
-          .where('gymId', isEqualTo: getGymId(selectedGym!))
-          .limit(1)
-          .get();
-
-      return querySnapshot.docs.isNotEmpty;
-    } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Selected gym does not have user with this email",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.SNACKBAR,
-        backgroundColor: Colors.black54,
-        textColor: Colors.white,
-        fontSize: 14.0,
-      );
-      return false;
-    }
   }
 
   Widget _emailAddress() {

@@ -15,10 +15,29 @@ class _ViewAdminProfileState extends State<ViewAdminProfile> {
   final String docId;
   _ViewAdminProfileState(this.docId);
   var email = "";
+  var gymName = "";
 
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      var collection = FirebaseFirestore.instance.collection('gyms');
+      var docSnapshot = await collection.doc(docId).get();
+      if (docSnapshot.exists) {
+        Map<String, dynamic>? data = docSnapshot.data();
+
+        setState(() {
+          gymName = data?['name'];
+          email = data?['email'];
+        });
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
   }
 
   Future<void> refreshClasses() async {
@@ -34,7 +53,7 @@ class _ViewAdminProfileState extends State<ViewAdminProfile> {
       DateTime futureDateTime = nowDateTime.add(Duration(days: 8));
       Timestamp futureTimestamp = Timestamp.fromDate(futureDateTime);
 
-      // getting all the documents from fb snapshot
+      // getting all the documents from snapshot
       final snapshot = await FirebaseFirestore.instance
           .collection("classes")
           .where('weekly', isEqualTo: true)
@@ -69,10 +88,13 @@ class _ViewAdminProfileState extends State<ViewAdminProfile> {
               await FirebaseFirestore.instance.collection("classes").add({
                 "title": gymClass.data()['title'],
                 "coach": gymClass.data()['coach'],
+                "coachId": gymClass.data()['coachId'],
+                "gymId": gymClass.data()['gymId'],
                 "size": gymClass.data()['size'],
                 "startTime": newStartTimestamp,
                 "endTime": newEndTimestamp,
                 "signins": [],
+                "attended": [],
                 "weekly": gymClass.data()['weekly'],
               });
             }
@@ -85,7 +107,6 @@ class _ViewAdminProfileState extends State<ViewAdminProfile> {
           }
         }
       }
-      print('classes refreshed');
       final snackBar = SnackBar(
         content: const Text('Classes Refreshed'),
       );
@@ -123,28 +144,25 @@ class _ViewAdminProfileState extends State<ViewAdminProfile> {
                             .primaryColor, // Background color if no image
                       ),
                       child: Center(
-                        child: Text(
-                          "GYM",
-                          style: TextStyle(
-                            fontSize: 36,
-                            color: Colors.black,
-                          ),
-                        ),
+                        child: gymName == ""
+                            ? null
+                            : Text(
+                                gymName.substring(0, 1),
+                                style: TextStyle(
+                                  fontSize: 48,
+                                  color: Colors.black,
+                                ),
+                              ),
                       ),
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'Gym Name',
+                      gymName,
                       style: TextStyle(fontSize: 24),
                     ),
                     SizedBox(height: 10),
                     Text(
                       email,
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      "Phone Number",
                       style: TextStyle(fontSize: 24),
                     ),
                     SizedBox(height: 50),

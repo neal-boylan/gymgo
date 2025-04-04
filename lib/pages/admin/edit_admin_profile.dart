@@ -54,14 +54,13 @@ class _EditAdminProfileState extends State<EditAdminProfile> {
 
   Future<void> fetchData() async {
     try {
-      var collection = FirebaseFirestore.instance.collection('coaches');
+      var collection = FirebaseFirestore.instance.collection('gyms');
       var docSnapshot = await collection.doc(userId).get();
       if (docSnapshot.exists) {
         Map<String, dynamic>? data = docSnapshot.data();
 
         setState(() {
-          gymName = data?['firstName'];
-          phoneNumber = data?['lastName'];
+          gymName = data?['name'];
         });
       }
     } catch (e) {
@@ -77,26 +76,17 @@ class _EditAdminProfileState extends State<EditAdminProfile> {
   Future<void> updateDb(String? userId) async {
     try {
       if (gymNameController.text.trim() == "") {
-        await FirebaseFirestore.instance
-            .collection("coaches")
-            .doc(userId)
-            .update({
-          "lastName": phoneController.text.trim(),
+        await FirebaseFirestore.instance.collection("gyms").doc(userId).update({
+          "phone": phoneController.text.trim(),
         });
       } else if (phoneController.text.trim() == "") {
-        await FirebaseFirestore.instance
-            .collection("coaches")
-            .doc(userId)
-            .update({
-          "firstName": gymNameController.text.trim(),
+        await FirebaseFirestore.instance.collection("gyms").doc(userId).update({
+          "name": gymNameController.text.trim(),
         });
       } else {
-        await FirebaseFirestore.instance
-            .collection("coaches")
-            .doc(userId)
-            .update({
-          "firstName": gymNameController.text.trim(),
-          "lastName": phoneController.text.trim(),
+        await FirebaseFirestore.instance.collection("gyms").doc(userId).update({
+          "name": gymNameController.text.trim(),
+          "phone": phoneController.text.trim(),
         });
       }
 
@@ -128,7 +118,7 @@ class _EditAdminProfileState extends State<EditAdminProfile> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Update Profile'),
+          title: Text('Update Gym Profile'),
           backgroundColor: Theme.of(context).primaryColor,
         ),
         body: Column(
@@ -140,7 +130,7 @@ class _EditAdminProfileState extends State<EditAdminProfile> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "First Name",
+                      "Gym Name",
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -156,7 +146,7 @@ class _EditAdminProfileState extends State<EditAdminProfile> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Last Name",
+                      "Phone Number",
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -166,7 +156,7 @@ class _EditAdminProfileState extends State<EditAdminProfile> {
                       hintText: phoneNumber,
                     ),
                     maxLines: 1,
-                    keyboardType: TextInputType.text,
+                    keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 20),
                   _changePassword(context),
