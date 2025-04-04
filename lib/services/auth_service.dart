@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../pages/home_page.dart';
 import '../pages/login_page_2.dart';
-import '../pages/static_variable.dart';
+import '../utils/static_variable.dart';
 
 class AuthService {
   Future<bool> checkIfGymAlreadyRegistered(String gymName) async {

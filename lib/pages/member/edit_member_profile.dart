@@ -3,7 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/change_password.dart';
+import 'package:gymgo/utils/change_password.dart';
 
 import '../home_page.dart';
 

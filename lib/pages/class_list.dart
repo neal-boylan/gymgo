@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gymgo/pages/admin/view_class_signins.dart';
-import 'package:gymgo/pages/static_variable.dart';
+import 'package:gymgo/utils/static_variable.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:intl/intl.dart';
 
@@ -72,7 +72,6 @@ class _ClassListState extends State<ClassList> {
 
   @override
   Widget build(BuildContext context) {
-    print("StaticVariable.gymIdVariable: ${StaticVariable.gymIdVariable}");
     return Center(
       child: Column(
         children: [
@@ -90,9 +89,11 @@ class _ClassListState extends State<ClassList> {
                     .collection("classes")
                     .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
                     .where('startTime', isGreaterThanOrEqualTo: selectedDate)
-                    .where('startTime',
-                        isLessThan: DateTime(selectedDate.year,
-                            selectedDate.month, selectedDate.day + 1))
+                    .where(
+                      'startTime',
+                      isLessThan: DateTime(selectedDate.year,
+                          selectedDate.month, selectedDate.day + 1),
+                    )
                     .where('coachId',
                         isEqualTo:
                             FirebaseAuth.instance.currentUser!.uid.toString())
@@ -101,9 +102,11 @@ class _ClassListState extends State<ClassList> {
                     .collection("classes")
                     .where('gymId', isEqualTo: StaticVariable.gymIdVariable)
                     .where('startTime', isGreaterThanOrEqualTo: selectedDate)
-                    .where('startTime',
-                        isLessThan: DateTime(selectedDate.year,
-                            selectedDate.month, selectedDate.day + 1))
+                    .where(
+                      'startTime',
+                      isLessThan: DateTime(selectedDate.year,
+                          selectedDate.month, selectedDate.day + 1),
+                    )
                     .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -157,11 +160,27 @@ class _ClassListState extends State<ClassList> {
                               uid: FirebaseAuth.instance.currentUser!.uid,
                               onTap: () {
                                 var docId = snapshot.data!.docs[index].id;
-                                snapshot.data!.docs[index]
-                                        .data()['startTime']
-                                        .toDate()
-                                        .isAfter(DateTime.now())
-                                    ? Navigator.push(
+                                widget.member
+                                    ? snapshot.data!.docs[index]
+                                            .data()['startTime']
+                                            .toDate()
+                                            .isAfter(DateTime.now())
+                                        ? Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  widget.member
+                                                      ? SignInClass(
+                                                          docId: docId,
+                                                        )
+                                                      : ViewClassSignins(
+                                                          docId: docId,
+                                                          coach: widget.coach,
+                                                        ),
+                                            ),
+                                          )
+                                        : null
+                                    : Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => widget.member
@@ -173,8 +192,7 @@ class _ClassListState extends State<ClassList> {
                                                   coach: widget.coach,
                                                 ),
                                         ),
-                                      )
-                                    : print('doc clicked: $docId');
+                                      );
                               },
                             ),
                           ),

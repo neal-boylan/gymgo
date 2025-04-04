@@ -127,18 +127,16 @@ class _EditClassState extends State<EditClass> {
       int index = coachNameList.indexOf(selectedValue.toString());
       String coachId = coachIdList[index];
 
-      final data = await FirebaseFirestore.instance
-          .collection("classes")
-          .doc(docId)
-          .update({
-        'coach': selectedValue,
-        "coachId": coachId.toString(),
-        //'endTime': endDateTime,
-        'size': int.parse(sizeController.text.trim()),
-        //'startTime': startDateTime,
-        'title': titleController.text.trim(),
-      });
-      print('update: $docId');
+      await FirebaseFirestore.instance.collection("classes").doc(docId).update(
+        {
+          'coach': selectedValue,
+          "coachId": coachId.toString(),
+          //'endTime': endDateTime,
+          'size': int.parse(sizeController.text.trim()),
+          //'startTime': startDateTime,
+          'title': titleController.text.trim(),
+        },
+      );
     } catch (e) {
       print(e);
     }

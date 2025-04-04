@@ -22,7 +22,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // DateTime selectedDate = DateTime.now();
   DateTime selectedDate =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   DateTime currentDate = DateTime.now();
@@ -133,71 +132,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> signOutUser() async {
     await FirebaseAuth.instance.signOut();
-  }
-
-  Future<void> queryValues() async {
-    List myList = [];
-
-    // define how far into the past to search for weekly classes
-    // define how far into the future weekly classes will be created
-    Timestamp nowTimestamp = Timestamp.now();
-    DateTime nowDateTime = nowTimestamp.toDate();
-    DateTime pastDateTime = nowDateTime.add(Duration(days: -7));
-    Timestamp pastTimestamp = Timestamp.fromDate(pastDateTime);
-    DateTime futureDateTime = nowDateTime.add(Duration(days: 8));
-    Timestamp futureTimestamp = Timestamp.fromDate(futureDateTime);
-
-    // getting all the documents from fb snapshot
-    final snapshot = await FirebaseFirestore.instance
-        .collection("classes")
-        .where('weekly', isEqualTo: true)
-        .where('startTime', isGreaterThanOrEqualTo: pastTimestamp)
-        .get();
-
-    // check if the collection is not empty before handling it
-    if (snapshot.docs.isNotEmpty) {
-      // add all items to myList
-      myList.addAll(snapshot.docs);
-    }
-
-    for (var gymClass in snapshot.docs) {
-      Timestamp startTimestamp = gymClass.data()['startTime'];
-      DateTime startDateTime = startTimestamp.toDate();
-      DateTime newStartDateTime = startDateTime.add(Duration(days: 7));
-      Timestamp newStartTimestamp = Timestamp.fromDate(newStartDateTime);
-
-      Timestamp endTimestamp = gymClass.data()['endTime'];
-      DateTime endDateTime = endTimestamp.toDate();
-      DateTime newEndDateTime = endDateTime.add(Duration(days: 7));
-      Timestamp newEndTimestamp = Timestamp.fromDate(newEndDateTime);
-
-      while (!newStartDateTime.isAfter(futureDateTime)) {
-        try {
-          final check = await FirebaseFirestore.instance
-              .collection("classes")
-              .where('startTime', isEqualTo: newStartTimestamp)
-              .get();
-
-          if (check.docs.isEmpty) {
-            await FirebaseFirestore.instance.collection("classes").add({
-              "title": gymClass.data()['title'],
-              "coach": gymClass.data()['coach'],
-              "size": gymClass.data()['size'],
-              "startTime": newStartTimestamp,
-              "endTime": newEndTimestamp,
-              "signins": [],
-              "weekly": gymClass.data()['weekly'],
-            });
-          }
-          newStartDateTime = newStartDateTime.add(Duration(days: 7));
-          newStartTimestamp = Timestamp.fromDate(newStartDateTime);
-          newEndDateTime = endDateTime.add(Duration(days: 7));
-          newEndTimestamp = Timestamp.fromDate(newEndDateTime);
-        } catch (e) {
-          print(e);
-        }
-      }
-    }
   }
 
   @override

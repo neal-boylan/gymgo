@@ -3,7 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/change_password.dart';
+import 'package:gymgo/utils/change_password.dart';
 
 import '../home_page.dart';
 
@@ -208,8 +208,9 @@ class _EditAdminProfileState extends State<EditAdminProfile> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(children: [
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: [
             const TextSpan(
               text: "Want to change your password? click ",
               style: TextStyle(
@@ -218,19 +219,22 @@ class _EditAdminProfileState extends State<EditAdminProfile> {
                   fontSize: 16),
             ),
             TextSpan(
-                text: "HERE",
-                style: const TextStyle(
-                    color: Color(0xff1A1D1E),
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ChangePassword()),
-                    );
-                  }),
-          ])),
+              text: "HERE",
+              style: const TextStyle(
+                  color: Color(0xff1A1D1E),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ChangePassword()),
+                  );
+                },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

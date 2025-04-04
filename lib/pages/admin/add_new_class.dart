@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gymgo/pages/static_variable.dart';
-
-import '../home_page.dart';
+import 'package:gymgo/utils/static_variable.dart';
 
 class AddNewClass extends StatefulWidget {
   const AddNewClass({super.key});
@@ -139,7 +137,7 @@ class _AddNewClassState extends State<AddNewClass> {
       int index = coachNameList.indexOf(selectedValue.toString());
       String coachId = coachIdList[index];
 
-      final data = await FirebaseFirestore.instance.collection("classes").add({
+      await FirebaseFirestore.instance.collection("classes").add({
         "title": titleController.text.trim(),
         "coach": selectedValue,
         "coachId": coachId.toString(),
@@ -201,14 +199,14 @@ class _AddNewClassState extends State<AddNewClass> {
               if (context.mounted) {
                 Navigator.pop(context);
               }
-              if (context.mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MyHomePage(),
-                  ),
-                );
-              }
+              // if (context.mounted) {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => MyHomePage(),
+              //     ),
+              //   );
+              // }
             },
             child: const Text(
               'SUBMIT',

@@ -51,7 +51,6 @@ class _ViewAdminProfileState extends State<ViewAdminProfile> {
       DateTime pastDateTime = nowDateTime.add(Duration(days: -7));
       Timestamp pastTimestamp = Timestamp.fromDate(pastDateTime);
       DateTime futureDateTime = nowDateTime.add(Duration(days: 8));
-      Timestamp futureTimestamp = Timestamp.fromDate(futureDateTime);
 
       // getting all the documents from snapshot
       final snapshot = await FirebaseFirestore.instance

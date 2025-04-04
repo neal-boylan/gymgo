@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/admin/view_member_profile.dart';
-import 'package:intl/intl.dart';
 
+import '../../utils/static_variable.dart';
 import '../../widgets/member_card.dart';
-import '../static_variable.dart';
 
 class MemberList extends StatefulWidget {
   final bool coach;
@@ -56,7 +55,6 @@ class _MemberListState extends State<MemberList> {
                   child: ListView.builder(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      DateFormat dateFormat = DateFormat('Hm');
                       return Row(
                         children: [
                           Expanded(

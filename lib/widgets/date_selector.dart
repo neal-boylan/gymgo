@@ -64,7 +64,7 @@ class _DateSelectorState extends State<DateSelector> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: SizedBox(
-            height: 80,
+            height: 90,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: weekDates.length,
@@ -96,6 +96,15 @@ class _DateSelectorState extends State<DateSelector> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text(
+                          DateFormat('MMM').format(date), // Month
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
                         Text(
                           DateFormat('d').format(date), // Day of the month
                           style: TextStyle(
