@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         hoverColor: Colors.transparent,
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
+          seedColor: const Color(0xFF67BAC0), //Colors.green,
           brightness: Brightness.light,
         ),
         fontFamily: 'Cera Pro',

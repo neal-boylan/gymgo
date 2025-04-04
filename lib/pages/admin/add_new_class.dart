@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gymgo/utils/static_variable.dart';
+import 'package:intl/intl.dart';
 
 class AddNewClass extends StatefulWidget {
   const AddNewClass({super.key});
@@ -99,8 +100,22 @@ class _AddNewClassState extends State<AddNewClass> {
 
   final sizeController = TextEditingController();
   // List<dynamic> coachList = [];
-  DateTime startDateTime = DateTime.now();
-  DateTime endDateTime = DateTime.now();
+  DateTime startDateTime = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+    12,
+    0,
+    0,
+  );
+  DateTime endDateTime = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+    13,
+    0,
+    0,
+  );
   DateTime selectedDate = DateTime.now();
   bool weekly = false;
   File? file;
@@ -222,37 +237,6 @@ class _AddNewClassState extends State<AddNewClass> {
           child: Center(
             child: Column(
               children: [
-                // UNCOMMENT THIS in Firebase Storage section!
-
-                // GestureDetector(
-                //   onTap: () async {
-                //     final image = await selectImage();
-                //     setState(() {
-                //       file = image;
-                //     });
-                //   },
-                //   child: DottedBorder(
-                //     borderType: BorderType.RRect,
-                //     radius: const Radius.circular(10),
-                //     dashPattern: const [10, 4],
-                //     strokeCap: StrokeCap.round,
-                //     child: Container(
-                //       width: double.infinity,
-                //       height: 150,
-                //       decoration: BoxDecoration(
-                //         borderRadius: BorderRadius.circular(10),
-                //       ),
-                //       child: file != null
-                //           ? Image.file(file!)
-                //           : const Center(
-                //               child: Icon(
-                //                 Icons.camera_alt_outlined,
-                //                 size: 40,
-                //               ),
-                //             ),
-                //     ),
-                //   ),
-                // ),
                 SizedBox(height: 10),
                 TextFormField(
                   controller: titleController,
@@ -262,23 +246,26 @@ class _AddNewClassState extends State<AddNewClass> {
                 ),
                 SizedBox(height: 10),
                 coachNameList.isEmpty
-                    ? CircularProgressIndicator() // Show loading indicator
+                    ? CircularProgressIndicator()
                     : DropdownMenu<String>(
                         label: Text('Coach'),
                         expandedInsets: EdgeInsets.zero,
                         initialSelection: coachNameList.first,
                         onSelected: (String? value) {
-                          // This is called when the user selects an item.
-                          setState(() {
-                            selectedValue = value!;
-                          });
-                        },
-                        dropdownMenuEntries: coachNameList.map((String value) {
-                          return DropdownMenuEntry<String>(
-                            value: value,
-                            label: value,
+                          setState(
+                            () {
+                              selectedValue = value!;
+                            },
                           );
-                        }).toList(),
+                        },
+                        dropdownMenuEntries: coachNameList.map(
+                          (String value) {
+                            return DropdownMenuEntry<String>(
+                              value: value,
+                              label: value,
+                            );
+                          },
+                        ).toList(),
                       ),
                 SizedBox(height: 10),
                 TextField(
@@ -329,7 +316,7 @@ class _AddNewClassState extends State<AddNewClass> {
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary),
                         child: Text(
-                          '${startDateTime.year}/${startDateTime.month}/${startDateTime.day}',
+                          '${startDateTime.day} ${DateFormat('MMM').format(startDateTime)} ${startDateTime.year}',
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.white,

@@ -1,24 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../widgets/sign_in_card.dart';
 import 'edit_class.dart';
 
-class ViewClassSignins extends StatefulWidget {
+class ViewClass extends StatefulWidget {
   final String docId;
   final bool coach;
-  const ViewClassSignins({super.key, required this.docId, required this.coach});
+  const ViewClass({super.key, required this.docId, required this.coach});
 
   @override
-  State<ViewClassSignins> createState() => _ViewClassSigninsState(docId);
+  State<ViewClass> createState() => _ViewClassState(docId);
 }
 
-class _ViewClassSigninsState extends State<ViewClassSignins> {
+class _ViewClassState extends State<ViewClass> {
   final String docId;
   double listScreenSize = 0.75;
-  _ViewClassSigninsState(this.docId);
+  _ViewClassState(this.docId);
   List<dynamic> signInList = [];
   List<dynamic> attendedList = [];
+  DateTime classStartTime = DateTime.now();
+  DateTime classEndTime = DateTime.now();
 
   @override
   void initState() {
@@ -38,6 +41,8 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
         setState(() {
           signInList = List.from(doc['signins']);
           attendedList = List.from(doc['attended']);
+          classStartTime = doc['startTime'].toDate();
+          classEndTime = doc['endTime'].toDate();
         });
         print('items: $signInList');
       }
@@ -50,7 +55,20 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Class Signins'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Class Signins'),
+            Text(
+              '${DateFormat('dd MMM y').format(classStartTime)}, '
+              '${DateFormat('HH:mm').format(classStartTime)}-'
+              '${DateFormat('HH:mm').format(classEndTime)}',
+              style: TextStyle(
+                fontSize: 16, // Set your desired size here
+              ),
+            ),
+          ],
+        ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SafeArea(
@@ -61,7 +79,7 @@ class _ViewClassSigninsState extends State<ViewClassSignins> {
                     height: MediaQuery.of(context).size.height * listScreenSize,
                     child: Center(
                       child: const Text(
-                        'No SignIns',
+                        'No Signins',
                         style: TextStyle(fontSize: 24),
                       ),
                     ),

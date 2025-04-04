@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gymgo/pages/admin/view_class_signins.dart';
+import 'package:gymgo/pages/admin/view_class.dart';
 import 'package:gymgo/utils/static_variable.dart';
 import 'package:gymgo/widgets/date_selector.dart';
 import 'package:intl/intl.dart';
@@ -123,10 +123,12 @@ class _ClassListState extends State<ClassList> {
                       child: Text(
                     'No Classes Today',
                     style: GoogleFonts.raleway(
-                        textStyle: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 32)),
+                      textStyle: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 32,
+                      ),
+                    ),
                     textAlign: TextAlign.center,
                   )),
                 );
@@ -173,7 +175,7 @@ class _ClassListState extends State<ClassList> {
                                                       ? SignInClass(
                                                           docId: docId,
                                                         )
-                                                      : ViewClassSignins(
+                                                      : ViewClass(
                                                           docId: docId,
                                                           coach: widget.coach,
                                                         ),
@@ -187,7 +189,7 @@ class _ClassListState extends State<ClassList> {
                                               ? SignInClass(
                                                   docId: docId,
                                                 )
-                                              : ViewClassSignins(
+                                              : ViewClass(
                                                   docId: docId,
                                                   coach: widget.coach,
                                                 ),
