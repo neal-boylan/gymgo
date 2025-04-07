@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import '../home_page.dart';
 
@@ -20,6 +21,8 @@ class _EditClassState extends State<EditClass> {
   List<Map<String, dynamic>> coachDocList = [];
   List<String> coachNameList = [];
   List<String> coachIdList = [];
+  DateTime classStartTime = DateTime.now();
+  DateTime classEndTime = DateTime.now();
   String? selectedValue;
 
   _EditClassState(this.docId);
@@ -97,16 +100,21 @@ class _EditClassState extends State<EditClass> {
 
   Future<void> fetchData() async {
     try {
-      var collection = FirebaseFirestore.instance.collection('classes');
-      var docSnapshot = await collection.doc(docId).get();
-      if (docSnapshot.exists) {
-        Map<String, dynamic>? data = docSnapshot.data();
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('classes')
+          .doc(docId)
+          .get();
+
+      if (doc.exists) {
+        // Map<String, dynamic>? data = docSnapshot.data();
 
         setState(() {
-          title = data?['title'];
-          classSize = data?['size'];
+          title = doc['title'];
+          classSize = doc['size'];
           titleController.text = title;
           sizeController.text = classSize.toString();
+          classStartTime = doc['startTime'].toDate();
+          classEndTime = doc['endTime'].toDate();
         });
       }
     } catch (e) {
@@ -168,39 +176,22 @@ class _EditClassState extends State<EditClass> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text('Edit Class'),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Edit Class'),
+              Text(
+                '${DateFormat('dd MMM y').format(classStartTime)}, '
+                '${DateFormat('HH:mm').format(classStartTime)}-'
+                '${DateFormat('HH:mm').format(classEndTime)}',
+                style: TextStyle(
+                  fontSize: 16, // Set your desired size here
+                ),
+              ),
+            ],
+          ),
           backgroundColor: Theme.of(context).primaryColor,
         ),
-        // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        // floatingActionButton: Container(
-        //   height: 50,
-        //   margin: const EdgeInsets.all(10),
-        //   child: ElevatedButton(
-        //     style: ElevatedButton.styleFrom(
-        //         backgroundColor: Theme.of(context).colorScheme.primary),
-        //     onPressed: () async {
-        //       await editClassInDb();
-        //       if (context.mounted) {
-        //         Navigator.pop(context);
-        //       }
-        //       if (context.mounted) {
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(
-        //             builder: (context) => MyHomePage(),
-        //           ),
-        //         );
-        //       }
-        //     },
-        //     child: const Text(
-        //       'SUBMIT',
-        //       style: TextStyle(
-        //         fontSize: 16,
-        //         color: Colors.white,
-        //       ),
-        //     ),
-        //   ),
-        // ),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -286,15 +277,16 @@ class _EditClassState extends State<EditClass> {
                     await editClassInDb();
                     if (context.mounted) {
                       Navigator.pop(context);
+                      Navigator.pop(context);
                     }
-                    if (context.mounted) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MyHomePage(),
-                        ),
-                      );
-                    }
+                    // if (context.mounted) {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => MyHomePage(),
+                    //     ),
+                    //   );
+                    // }
                   },
                   child: const Text(
                     'SAVE CHANGES',
