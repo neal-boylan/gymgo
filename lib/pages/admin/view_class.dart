@@ -31,7 +31,6 @@ class _ViewClassState extends State<ViewClass> {
 
   Future<void> fetchData() async {
     try {
-      print('docId: $docId');
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('classes')
           .doc(docId)
@@ -44,7 +43,6 @@ class _ViewClassState extends State<ViewClass> {
           classStartTime = doc['startTime'].toDate();
           classEndTime = doc['endTime'].toDate();
         });
-        print('items: $signInList');
       }
     } catch (e) {
       print("Error fetching data: $e");

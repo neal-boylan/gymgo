@@ -57,7 +57,7 @@ class _AddNewClassState extends State<AddNewClass> {
     });
   }
 
-  // Function to fetch Firestore values
+  // Function to fetch Firestore values for dropdown menu
   Future<void> fetchDropdownValues() async {
     List<String> values = await getFieldValues("coaches", "firstName");
     setState(() {

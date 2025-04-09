@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gymgo/pages/admin/view_member_workouts.dart';
 import 'package:gymgo/pages/member/edit_member_profile.dart';
 
 class ViewMemberProfile extends StatefulWidget {
@@ -129,11 +130,11 @@ class _ViewMemberProfileState extends State<ViewMemberProfile> {
                   email,
                   style: TextStyle(fontSize: 24),
                 ),
-                SizedBox(height: 10),
-                Text(
-                  "Phone Number",
-                  style: TextStyle(fontSize: 24),
-                ),
+                // SizedBox(height: 10),
+                // Text(
+                //   "Phone Number",
+                //   style: TextStyle(fontSize: 24),
+                // ),
                 SizedBox(height: 50),
 
                 // Row(
@@ -203,7 +204,16 @@ class _ViewMemberProfileState extends State<ViewMemberProfile> {
                   ),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ViewMemberWorkouts(
+                              memberId: docId,
+                            ),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         shape: CircleBorder(),
                         padding:

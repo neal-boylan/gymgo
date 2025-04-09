@@ -139,9 +139,7 @@ class _EditClassState extends State<EditClass> {
         {
           'coach': selectedValue,
           "coachId": coachId.toString(),
-          //'endTime': endDateTime,
           'size': int.parse(sizeController.text.trim()),
-          //'startTime': startDateTime,
           'title': titleController.text.trim(),
         },
       );

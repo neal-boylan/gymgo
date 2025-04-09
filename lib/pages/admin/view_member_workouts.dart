@@ -1,44 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gymgo/pages/member/add_new_workout.dart';
 import 'package:gymgo/pages/member/view_workout.dart';
 import 'package:intl/intl.dart';
 
 import '../../widgets/workout_card.dart';
 
-class WorkoutList extends StatefulWidget {
-  const WorkoutList({super.key});
+class ViewMemberWorkouts extends StatefulWidget {
+  final String memberId;
+  const ViewMemberWorkouts({super.key, required this.memberId});
   @override
-  State<WorkoutList> createState() => _WorkoutListState();
+  State<ViewMemberWorkouts> createState() => _ViewMemberWorkoutsState();
 }
 
-class _WorkoutListState extends State<WorkoutList> {
+class _ViewMemberWorkoutsState extends State<ViewMemberWorkouts> {
+  var firstName = "";
+
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      var collection = FirebaseFirestore.instance.collection('members');
+      var docSnapshot = await collection.doc(widget.memberId).get();
+      if (docSnapshot.exists) {
+        Map<String, dynamic>? data = docSnapshot.data();
+
+        setState(() {
+          firstName = data?['firstName'];
+        });
+      }
+    } catch (e) {
+      print("Error fetching data: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Workouts'),
-      //   backgroundColor: Theme.of(context).primaryColor,
-      // ),
+      appBar: AppBar(
+        title: Text('$firstName\'s Workouts'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: Center(
         child: Column(
           children: [
-            // FutureBuilder(
-            //   future: FirebaseFirestore.instance.collection("classes").get(),
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection("workouts")
                   .orderBy('workoutDate', descending: true)
-                  .where('userId',
-                      isEqualTo:
-                          FirebaseAuth.instance.currentUser!.uid.toString())
+                  .where('userId', isEqualTo: widget.memberId)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -102,19 +116,6 @@ class _WorkoutListState extends State<WorkoutList> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddNewWorkout(),
-            ),
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gymgo/pages/member/edit_exercise.dart';
 import 'package:intl/intl.dart';
@@ -11,12 +12,14 @@ class ViewWorkout extends StatefulWidget {
   const ViewWorkout({super.key, required this.docId});
 
   @override
-  State<ViewWorkout> createState() => _ViewWorkoutState(docId);
+  State<ViewWorkout> createState() => _ViewWorkoutState();
 }
 
 class _ViewWorkoutState extends State<ViewWorkout> {
-  final String docId;
-  _ViewWorkoutState(this.docId);
+  // final String docId;
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
+  String memberId = "";
+  _ViewWorkoutState();
   String workoutDate = "";
   List<dynamic> exercise = [];
   List<dynamic> reps = [];
@@ -31,7 +34,6 @@ class _ViewWorkoutState extends State<ViewWorkout> {
 
   Future<void> fetchData() async {
     try {
-      print('docId: $docId');
       String formatTimestamp(Timestamp timestamp) {
         DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
         return DateFormat('E dd MMM yyyy')
@@ -40,7 +42,7 @@ class _ViewWorkoutState extends State<ViewWorkout> {
 
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('workouts')
-          .doc(docId)
+          .doc(widget.docId)
           .get();
 
       if (doc.exists) {
@@ -49,7 +51,8 @@ class _ViewWorkoutState extends State<ViewWorkout> {
           exercise = List.from(doc['exercise']);
           sets = List.from(doc['sets']);
           reps = List.from(doc['reps']);
-          weight = List.from(doc['weight']); // Extract and store in state
+          weight = List.from(doc['weight']);
+          memberId = doc['userId'];
         });
       }
     } catch (e) {
@@ -83,15 +86,17 @@ class _ViewWorkoutState extends State<ViewWorkout> {
                                 reps: reps[index].toString(),
                                 weight: weight[index].toString(),
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditExercise(
-                                        docId: docId,
-                                        index: index,
-                                      ),
-                                    ),
-                                  );
+                                  memberId == userId
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => EditExercise(
+                                              docId: widget.docId,
+                                              index: index,
+                                            ),
+                                          ),
+                                        )
+                                      : null;
                                 },
                               ),
                             ),
@@ -108,26 +113,29 @@ class _ViewWorkoutState extends State<ViewWorkout> {
                     ),
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddExercise(docId: docId),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'ADD EXERCISE TO WORKOUT',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                      child: memberId == userId
+                          ? ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AddExercise(docId: widget.docId),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'ADD EXERCISE TO WORKOUT',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                 ],
