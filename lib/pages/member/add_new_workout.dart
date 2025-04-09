@@ -70,7 +70,6 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
         reps = [...reps, r];
         weight = [...weight, w];
       });
-      print('exercises: $ex, $s, $r, $w');
       final snackBar = SnackBar(
         content: const Text('Exercise added'),
         action: SnackBarAction(

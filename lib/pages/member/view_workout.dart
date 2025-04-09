@@ -21,7 +21,7 @@ class _ViewWorkoutState extends State<ViewWorkout> {
   String memberId = "";
   _ViewWorkoutState();
   String workoutDate = "";
-  List<dynamic> exercise = [];
+  List<dynamic> exercises = [];
   List<dynamic> reps = [];
   List<dynamic> sets = [];
   List<dynamic> weight = [];
@@ -48,7 +48,7 @@ class _ViewWorkoutState extends State<ViewWorkout> {
       if (doc.exists) {
         setState(() {
           workoutDate = formatTimestamp(doc['workoutDate']).toString();
-          exercise = List.from(doc['exercise']);
+          exercises = List.from(doc['exercise']);
           sets = List.from(doc['sets']);
           reps = List.from(doc['reps']);
           weight = List.from(doc['weight']);
@@ -60,6 +60,22 @@ class _ViewWorkoutState extends State<ViewWorkout> {
     }
   }
 
+  Future<void> updateWorkoutInDb() async {
+    try {
+      final workoutDoc =
+          FirebaseFirestore.instance.collection('workouts').doc(widget.docId);
+
+      await workoutDoc.update({
+        "exercise": exercises,
+        "sets": sets,
+        "reps": reps,
+        "weight": weight,
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,40 +83,79 @@ class _ViewWorkoutState extends State<ViewWorkout> {
         title: Text('Workout, $workoutDate'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: exercise.isEmpty
+      body: exercises.isEmpty
           ? Center(child: CircularProgressIndicator()) // Loading indicator
           : Center(
               child: Column(
                 children: [
                   Expanded(
                     child: ListView.builder(
-                      itemCount: exercise.length,
+                      itemCount: exercises.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: ExerciseCard(
-                                color: Theme.of(context).colorScheme.primary,
-                                exercise: exercise[index],
-                                sets: sets[index].toString(),
-                                reps: reps[index].toString(),
-                                weight: weight[index].toString(),
-                                onTap: () {
-                                  memberId == userId
-                                      ? Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => EditExercise(
-                                              docId: widget.docId,
-                                              index: index,
-                                            ),
-                                          ),
-                                        )
-                                      : null;
-                                },
-                              ),
-                            ),
-                          ],
+                        final item = exercises[index];
+                        return Dismissible(
+                          key: Key(item),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (direction) async {
+                            // Show confirmation dialog
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Delete Confirmation'),
+                                  content: Text(
+                                      'Are you sure you want to delete "$item"?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: Text('Delete',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          onDismissed: (direction) {
+                            setState(() {
+                              exercises.removeAt(index);
+                              reps.removeAt(index);
+                              sets.removeAt(index);
+                              weight.removeAt(index);
+                              updateWorkoutInDb();
+                            });
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(
+                                SnackBar(content: Text('$item dismissed')));
+                          },
+                          background: Container(color: Colors.red),
+                          child: ExerciseCard(
+                            color: Theme.of(context).colorScheme.primary,
+                            exercise: exercises[index],
+                            sets: sets[index].toString(),
+                            reps: reps[index].toString(),
+                            weight: weight[index].toString(),
+                            onTap: () {
+                              memberId == userId
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditExercise(
+                                          docId: widget.docId,
+                                          index: index,
+                                        ),
+                                      ),
+                                    )
+                                  : null;
+                            },
+                          ),
                         );
                       },
                     ),
