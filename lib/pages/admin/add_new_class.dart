@@ -214,14 +214,6 @@ class _AddNewClassState extends State<AddNewClass> {
               if (context.mounted) {
                 Navigator.pop(context);
               }
-              // if (context.mounted) {
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => MyHomePage(),
-              //     ),
-              //   );
-              // }
             },
             child: const Text(
               'SUBMIT',

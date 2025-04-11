@@ -38,9 +38,14 @@ class _AddExerciseState extends State<AddExercise> {
       addItem = newItem;
     } else if (listName == 'weight') {
       addItem = double.parse(newItem);
-    } else {
+    } else if (listName == 'sets') {
       addItem = int.parse(newItem);
+    } else if (listName == 'reps') {
+      addItem = int.parse(newItem);
+    } else {
+      addItem = newItem;
     }
+
     await FirebaseFirestore.instance.collection('workouts').doc(docId).update({
       listName: FieldValue.arrayUnion([addItem])
     });

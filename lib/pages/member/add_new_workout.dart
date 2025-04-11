@@ -70,18 +70,6 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
         reps = [...reps, r];
         weight = [...weight, w];
       });
-      final snackBar = SnackBar(
-        content: const Text('Exercise added'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {
-            // Some code to undo the change.
-          },
-        ),
-      );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
     } on FirebaseAuthException catch (e) {
       print(e.message);
     }
@@ -242,10 +230,57 @@ class _AddNewWorkoutState extends State<AddNewWorkout> {
                   child: ListView.builder(
                     itemCount: exercises.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        // title: Text(exercises![index].toString()),
-                        title: Text(
-                            '${exercises[index]} ${sets[index]} x ${reps[index]} ${weight[index]}kg'),
+                      final item = exercises[index];
+                      return Dismissible(
+                        key: Key(item),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (direction) async {
+                          // Show confirmation dialog
+                          return await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Delete Confirmation'),
+                                content: Text(
+                                    'Are you sure you want to delete "$item"?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text('Delete',
+                                        style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        onDismissed: (direction) {
+                          setState(() {
+                            exercises.removeAt(index);
+                            reps.removeAt(index);
+                            sets.removeAt(index);
+                            weight.removeAt(index);
+                          });
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(
+                              SnackBar(content: Text('$item dismissed')));
+                        },
+                        background: Container(
+                            color: Theme.of(context).colorScheme.error),
+                        child: ListTile(
+                          title: Text(
+                              style: TextStyle(
+                                fontSize: 24,
+                              ),
+                              '${exercises[index]} ${sets[index]}x${reps[index]} ${weight[index]}kg'),
+                        ),
                       );
                     },
                   ),

@@ -20,18 +20,23 @@ class _WorkoutListState extends State<WorkoutList> {
     super.initState();
   }
 
+  Future<void> deleteWorkoutFromDb(String docId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("workouts")
+          .doc(docId)
+          .delete();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Workouts'),
-      //   backgroundColor: Theme.of(context).primaryColor,
-      // ),
       body: Center(
         child: Column(
           children: [
-            // FutureBuilder(
-            //   future: FirebaseFirestore.instance.collection("classes").get(),
             StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection("workouts")
@@ -48,17 +53,18 @@ class _WorkoutListState extends State<WorkoutList> {
                     ),
                   );
                 }
-                // if (!snapshot.hasData) {
                 if (snapshot.data!.docs.isEmpty) {
                   return Expanded(
                     child: Center(
                         child: Text(
                       'No Workouts Logged',
                       style: GoogleFonts.raleway(
-                          textStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 32)),
+                        textStyle: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32,
+                        ),
+                      ),
                       textAlign: TextAlign.center,
                     )),
                   );
@@ -67,31 +73,70 @@ class _WorkoutListState extends State<WorkoutList> {
                     child: ListView.builder(
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
+                        final item = snapshot.data!.docs[index]
+                            .data()['dateAdded']
+                            .toString();
                         DateFormat dateFormat = DateFormat('E dd MMM yyyy');
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: WorkoutCard(
-                                color: Theme.of(context).colorScheme.primary,
-                                workoutDate: dateFormat
-                                    .format(snapshot.data!.docs[index]
-                                        .data()['workoutDate']
-                                        .toDate())
-                                    .toString(),
-                                onTap: () {
-                                  var docId = snapshot.data!.docs[index].id;
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ViewWorkout(
-                                        docId: docId,
-                                      ),
+                        return Dismissible(
+                          key: Key(item),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (direction) async {
+                            // Show confirmation dialog
+                            return await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Delete Confirmation'),
+                                  content: Text(
+                                      'Are you sure you want to delete this workout?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: Text('Cancel'),
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: Text('Delete',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          onDismissed: (direction) {
+                            var docId = snapshot.data!.docs[index].id;
+                            setState(() {
+                              deleteWorkoutFromDb(docId);
+                            });
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(
+                                SnackBar(content: Text('workout deleted')));
+                          },
+                          background: Container(
+                              color: Theme.of(context).colorScheme.error),
+                          child: WorkoutCard(
+                            color: Theme.of(context).colorScheme.primary,
+                            workoutDate: dateFormat
+                                .format(snapshot.data!.docs[index]
+                                    .data()['workoutDate']
+                                    .toDate())
+                                .toString(),
+                            onTap: () {
+                              var docId = snapshot.data!.docs[index].id;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ViewWorkout(
+                                    docId: docId,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     ),
