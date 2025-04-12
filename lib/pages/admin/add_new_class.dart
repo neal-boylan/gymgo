@@ -80,8 +80,7 @@ class _AddNewClassState extends State<AddNewClass> {
       for (var doc in querySnapshot.docs) {
         if (doc.data() is Map<String, dynamic> &&
             (doc.data() as Map<String, dynamic>).containsKey(fieldName)) {
-          fieldValues
-              .add(doc[fieldName].toString()); // Convert to string if needed
+          fieldValues.add(doc[fieldName].toString());
         }
       }
     } catch (e) {
@@ -93,13 +92,7 @@ class _AddNewClassState extends State<AddNewClass> {
   final titleController = TextEditingController();
   final coachController = TextEditingController();
 
-  // static final List<MenuEntry> menuEntries = UnmodifiableListView<MenuEntry>(
-  //   list.map<MenuEntry>((String name) => MenuEntry(value: name, label: name)),
-  // );
-  // String dropdownValue = list.first;
-
   final sizeController = TextEditingController();
-  // List<dynamic> coachList = [];
   DateTime startDateTime = DateTime(
     DateTime.now().year,
     DateTime.now().month,

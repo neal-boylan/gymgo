@@ -116,7 +116,6 @@ class _ClassListState extends State<ClassList> {
                   ),
                 );
               }
-              // if (!snapshot.hasData) {
               if (snapshot.data!.docs.isEmpty) {
                 return Expanded(
                   child: Center(

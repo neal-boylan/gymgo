@@ -56,17 +56,18 @@ class _WorkoutListState extends State<WorkoutList> {
                 if (snapshot.data!.docs.isEmpty) {
                   return Expanded(
                     child: Center(
-                        child: Text(
-                      'No Workouts Logged',
-                      style: GoogleFonts.raleway(
-                        textStyle: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 32,
+                      child: Text(
+                        'No Workouts Logged',
+                        style: GoogleFonts.raleway(
+                          textStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 32,
+                          ),
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    )),
+                    ),
                   );
                 } else {
                   return Expanded(

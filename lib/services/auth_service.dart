@@ -80,6 +80,78 @@ class AuthService {
     }
   }
 
+  Future<void> signin(
+      {required String email,
+      required String password,
+      required BuildContext context,
+      required String gymName}) async {
+    try {
+      var userInGym = await checkIfUserIsGymMember(email, gymName);
+
+      if (userInGym) {
+        StaticVariable.gymIdVariable = await getGymId(gymName);
+
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+
+        await Future.delayed(
+          const Duration(seconds: 1),
+        );
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => MyHomePage(),
+            ),
+          );
+        }
+      } else {
+        Fluttertoast.showToast(
+          msg: "Selected gym does not have user with this email",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.SNACKBAR,
+          backgroundColor: Colors.black54,
+          textColor: Colors.white,
+          fontSize: 14.0,
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      print('e.code: ${e.code}');
+      print('e: $e');
+      String message = '';
+      if (e.code == 'channel-error') {
+        message = 'No user found for that email.';
+        var snackBar = SnackBar(content: Text('No user found for that email.'));
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else if (e.code == 'invalid-credential') {
+        message = 'Wrong password provided for that user.';
+        var snackBar =
+            SnackBar(content: Text('Wrong password provided for that user.'));
+      }
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+    }
+  }
+
+  Future<void> signout({required BuildContext context}) async {
+    await FirebaseAuth.instance.signOut();
+    await Future.delayed(const Duration(seconds: 1));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => LoginPage2(),
+      ),
+    );
+
+    StaticVariable.gymIdVariable = '';
+  }
+
   Future<void> addGymToDb(String? userId, String gymName, String email) async {
     try {
       await FirebaseFirestore.instance.collection("gyms").doc(userId).set({
@@ -152,77 +224,5 @@ class AuthService {
       print("Error: $e");
       return null;
     }
-  }
-
-  Future<void> signin(
-      {required String email,
-      required String password,
-      required BuildContext context,
-      required String gymName}) async {
-    try {
-      var userInGym = await checkIfUserIsGymMember(email, gymName);
-
-      if (userInGym) {
-        StaticVariable.gymIdVariable = await getGymId(gymName);
-
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
-
-        await Future.delayed(
-          const Duration(seconds: 1),
-        );
-        if (context.mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => MyHomePage(),
-            ),
-          );
-        }
-      } else {
-        Fluttertoast.showToast(
-          msg: "Selected gym does not have user with this email",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.SNACKBAR,
-          backgroundColor: Colors.black54,
-          textColor: Colors.white,
-          fontSize: 14.0,
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      print('e.code: ${e.code}');
-      print('e: $e');
-      String message = '';
-      if (e.code == 'channel-error') {
-        message = 'No user found for that email.';
-        var snackBar = SnackBar(content: Text('No user found for that email.'));
-        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      } else if (e.code == 'invalid-credential') {
-        message = 'Wrong password provided for that user.';
-        var snackBar =
-            SnackBar(content: Text('Wrong password provided for that user.'));
-      }
-      Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.SNACKBAR,
-        backgroundColor: Colors.black54,
-        textColor: Colors.white,
-        fontSize: 14.0,
-      );
-    }
-  }
-
-  Future<void> signout({required BuildContext context}) async {
-    await FirebaseAuth.instance.signOut();
-    await Future.delayed(const Duration(seconds: 1));
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => LoginPage2(),
-      ),
-    );
-
-    StaticVariable.gymIdVariable = '';
   }
 }

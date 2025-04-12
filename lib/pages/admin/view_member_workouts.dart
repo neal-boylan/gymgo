@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:gymgo/pages/member/view_workout.dart';
+import 'package:gymgo/pages/admin/view_member_workout.dart';
 import 'package:intl/intl.dart';
 
 import '../../widgets/workout_card.dart';
@@ -97,7 +97,7 @@ class _ViewMemberWorkoutsState extends State<ViewMemberWorkouts> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ViewWorkout(
+                                      builder: (context) => ViewMemberWorkout(
                                         docId: docId,
                                       ),
                                     ),
