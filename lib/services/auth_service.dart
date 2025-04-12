@@ -96,10 +96,7 @@ class AuthService {
 
   Future<bool> checkIfUserIsGymMember(String email, String gym) async {
     try {
-      print("email: $email");
-      print("gym: $gym");
       var gymId = await getGymId(gym);
-      print("gymId: $gymId");
       QuerySnapshot membersQuery = await FirebaseFirestore.instance
           .collection('members')
           .where('email', isEqualTo: email)
@@ -124,7 +121,6 @@ class AuthService {
       return membersQuery.docs.isNotEmpty ||
           coachesQuery.docs.isNotEmpty ||
           gymsQuery.docs.isNotEmpty;
-      // return querySnapshot.docs.isNotEmpty;
     } catch (e) {
       Fluttertoast.showToast(
         msg: "Selected gym does not have user with this email",
@@ -143,14 +139,13 @@ class AuthService {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('gyms')
           .where('name', isEqualTo: gymName)
-          .limit(1) // Get only one document
+          .limit(1)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         var doc = querySnapshot.docs.first;
         return doc['gymId'];
       } else {
-        print("No gym found");
         return null;
       }
     } catch (e) {
@@ -206,8 +201,6 @@ class AuthService {
         message = 'Wrong password provided for that user.';
         var snackBar =
             SnackBar(content: Text('Wrong password provided for that user.'));
-
-        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
       Fluttertoast.showToast(
         msg: message,

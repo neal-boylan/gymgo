@@ -153,13 +153,12 @@ class _LoginPage2State extends State<LoginPage2> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         gymNameList.isEmpty
-            ? CircularProgressIndicator() // Show loading indicator
+            ? CircularProgressIndicator()
             : DropdownMenu<String>(
                 label: Text('Find Your Gym'),
                 expandedInsets: EdgeInsets.zero,
                 initialSelection: gymNameList.first,
                 onSelected: (String? value) {
-                  // This is called when the user selects an item.
                   setState(
                     () {
                       selectedGym = value!;

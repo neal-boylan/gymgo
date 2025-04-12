@@ -135,10 +135,6 @@ class _ViewAdminProfileState extends State<ViewAdminProfile> {
                       height: 160,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        // image: DecorationImage(
-                        //   image: NetworkImage('https://via.placeholder.com/150'),
-                        //   fit: BoxFit.cover, // Ensures image fills the circle
-                        // ),
                         color: Theme.of(context)
                             .primaryColor, // Background color if no image
                       ),
