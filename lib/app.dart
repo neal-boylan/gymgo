@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gymgo/pages/login_page_2.dart';
+import 'package:gymgo/pages/login_page.dart';
 
 import 'pages/home_page.dart';
 

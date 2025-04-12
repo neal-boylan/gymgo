@@ -1,4 +1,4 @@
-import 'package:dropdown_search/dropdown_search.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,11 +6,87 @@ import 'package:gymgo/pages/signup_page.dart';
 
 import '../services/auth_service.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage2 extends StatefulWidget {
+  const LoginPage2({super.key});
 
+  @override
+  State<LoginPage2> createState() => _LoginPage2State();
+}
+
+// typedef MenuEntry = DropdownMenuEntry<String>;
+
+class _LoginPage2State extends State<LoginPage2> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  List<String> gymList = [];
+  List<Map<String, dynamic>> gymDocList = [];
+  List<String> gymNameList = ['1', '2'];
+  List<String> gymIdList = [];
+  String selectedGym = "";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDropdownValues();
+    fetchCoachDocuments();
+  }
+
+  Future<void> fetchCoachDocuments() async {
+    List<String> nameValues = [];
+    List<String> idValues = [];
+
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('gyms').get();
+
+    for (var doc in querySnapshot.docs) {
+      if (doc.data() is Map<String, dynamic> &&
+          (doc.data() as Map<String, dynamic>).containsKey('name')) {
+        nameValues.add(doc['name'].toString());
+        idValues.add(doc.id.toString());
+      }
+    }
+
+    setState(() {
+      gymDocList = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      gymNameList = nameValues;
+      gymIdList = idValues;
+    });
+  }
+
+  // Function to fetch Firestore values
+  Future<void> fetchDropdownValues() async {
+    List<String> values = await getFieldValues("gyms", "name");
+    setState(() {
+      gymList = values;
+      if (gymList.isNotEmpty) {
+        selectedGym = gymList.first; // Set default selected value
+      }
+    });
+  }
+
+  // Function to get field values from Firestore
+  Future<List<String>> getFieldValues(
+      String collectionName, String fieldName) async {
+    List<String> fieldValues = [];
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection(collectionName).get();
+      for (var doc in querySnapshot.docs) {
+        if (doc.data() is Map<String, dynamic> &&
+            (doc.data() as Map<String, dynamic>).containsKey(fieldName)) {
+          fieldValues
+              .add(doc[fieldName].toString()); // Convert to string if needed
+        }
+      }
+    } catch (e) {
+      print("Error fetching field values: $e");
+    }
+    return fieldValues;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +101,11 @@ class LoginPage extends StatelessWidget {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         bottomNavigationBar: _signup(context),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          toolbarHeight: 50,
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -47,7 +128,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 _gymPicker(),
                 const SizedBox(
-                  height: 40,
+                  height: 20,
                 ),
                 _emailAddress(),
                 const SizedBox(
@@ -55,7 +136,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 _password(),
                 const SizedBox(
-                  height: 50,
+                  height: 20,
                 ),
                 _signin(context),
               ],
@@ -71,21 +152,28 @@ class LoginPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Select your Gym',
-          style: GoogleFonts.raleway(
-              textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16)),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        DropdownSearch<String>(
-          items: (f, cs) =>
-              ["Crunch Fitness", 'Waterford S&C', 'GainzVille', 'PowerFit'],
-        ),
+        gymNameList.isEmpty
+            ? CircularProgressIndicator()
+            : DropdownMenu<String>(
+                label: Text('Find Your Gym'),
+                expandedInsets: EdgeInsets.zero,
+                initialSelection: gymNameList.first,
+                onSelected: (String? value) {
+                  setState(
+                    () {
+                      selectedGym = value!;
+                    },
+                  );
+                },
+                dropdownMenuEntries: gymNameList.map(
+                  (String value) {
+                    return DropdownMenuEntry<String>(
+                      value: value,
+                      label: value,
+                    );
+                  },
+                ).toList(),
+              ),
       ],
     );
   }
@@ -95,22 +183,12 @@ class LoginPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Email Address',
-          style: GoogleFonts.raleway(
-              textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16)),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
         TextField(
           controller: _emailController,
           decoration: InputDecoration(
             filled: true,
-            hintText: 'email@gmail.com',
+            label: Text('Email Address'),
+            // hintText: 'email@gmail.com',
             hintStyle: const TextStyle(
                 color: Color(0xff6A6A6A),
                 fontWeight: FontWeight.normal,
@@ -132,21 +210,11 @@ class LoginPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Password',
-          style: GoogleFonts.raleway(
-              textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16)),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
         TextField(
           obscureText: true,
           controller: _passwordController,
           decoration: InputDecoration(
+            label: Text('Password'),
             filled: true,
             fillColor: const Color(0xffF7F7F9),
             border: OutlineInputBorder(
@@ -174,8 +242,8 @@ class LoginPage extends StatelessWidget {
         await AuthService().signin(
             email: _emailController.text,
             password: _passwordController.text,
-            context: context,
-            gymName: '');
+            gymName: selectedGym,
+            context: context);
       },
       child: const Text(
         "LOGIN",
@@ -189,20 +257,20 @@ class LoginPage extends StatelessWidget {
 
   Widget _signup(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 50),
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
           children: [
             const TextSpan(
-              text: "New User? ",
+              text: "Gym Owner? Click ",
               style: TextStyle(
                   color: Color(0xff6A6A6A),
                   fontWeight: FontWeight.normal,
                   fontSize: 16),
             ),
             TextSpan(
-              text: "Create Account",
+              text: "HERE",
               style: const TextStyle(
                   color: Color(0xff1A1D1E),
                   fontWeight: FontWeight.normal,
@@ -214,6 +282,13 @@ class LoginPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => SignUpPage()),
                   );
                 },
+            ),
+            const TextSpan(
+              text: " to register with GYMGO",
+              style: TextStyle(
+                  color: Color(0xff6A6A6A),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16),
             ),
           ],
         ),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../pages/home_page.dart';
-import '../pages/login_page_2.dart';
+import '../pages/login_page.dart';
 import '../utils/static_variable.dart';
 
 class AuthService {

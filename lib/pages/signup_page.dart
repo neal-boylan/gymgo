@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../services/auth_service.dart';
-import 'login_page_2.dart';
+import 'login_page.dart';
 
 class SignUpPage extends StatelessWidget {
   SignUpPage({super.key});
