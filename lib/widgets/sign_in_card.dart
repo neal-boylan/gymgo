@@ -30,7 +30,7 @@ class _SignInCardState extends State<SignInCard> {
     isChecked = widget.attended; // Set initial value from parent
   }
 
-  Future<void> addMemberToClassDb(String memberId) async {
+  Future<void> addMemberToAttendedDb(String memberId) async {
     try {
       FirebaseFirestore.instance
           .collection("classes")
@@ -43,7 +43,7 @@ class _SignInCardState extends State<SignInCard> {
     }
   }
 
-  Future<void> removeMemberClassFromDb(String memberId) async {
+  Future<void> removeMemberFromAttendedDb(String memberId) async {
     try {
       FirebaseFirestore.instance
           .collection("classes")
@@ -99,13 +99,13 @@ class _SignInCardState extends State<SignInCard> {
                     });
                     if (value != null) {
                       value
-                          ? addMemberToClassDb(widget.memberId)
-                          : removeMemberClassFromDb(widget.memberId);
+                          ? addMemberToAttendedDb(widget.memberId)
+                          : removeMemberFromAttendedDb(widget.memberId);
                     }
                   },
                   shape: CircleBorder(),
                   checkColor: Colors.white,
-                  activeColor: Colors.blue,
+                  activeColor: Theme.of(context).colorScheme.primary,
                 ),
               )
             ],

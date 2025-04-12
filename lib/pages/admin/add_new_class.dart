@@ -160,12 +160,6 @@ class _AddNewClassState extends State<AddNewClass> {
 
       final snackBar = SnackBar(
         content: const Text('Class added'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {
-            // Some code to undo the change.
-          },
-        ),
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
