@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-import '../home_page.dart';
-
 class EditClass extends StatefulWidget {
   final String docId;
   const EditClass({super.key, required this.docId});
@@ -306,15 +304,16 @@ class _EditClassState extends State<EditClass> {
                     await deleteClassFromnDb();
                     if (context.mounted) {
                       Navigator.pop(context);
+                      Navigator.pop(context);
                     }
-                    if (context.mounted) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MyHomePage(),
-                        ),
-                      );
-                    }
+                    // if (context.mounted) {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => MyHomePage(),
+                    //     ),
+                    //   );
+                    // }
                   },
                   child: const Text(
                     'DELETE CLASS',

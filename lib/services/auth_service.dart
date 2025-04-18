@@ -51,7 +51,7 @@ class AuthService {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (BuildContext context) => MyHomePage(),
+            builder: (BuildContext context) => LoginPage2(),
           ),
         );
       } else {

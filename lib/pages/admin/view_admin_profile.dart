@@ -48,9 +48,9 @@ class _ViewAdminProfileState extends State<ViewAdminProfile> {
       // define how far into the future weekly classes will be created
       Timestamp nowTimestamp = Timestamp.now();
       DateTime nowDateTime = nowTimestamp.toDate();
-      DateTime pastDateTime = nowDateTime.add(Duration(days: -7));
+      DateTime pastDateTime = nowDateTime.add(Duration(days: -8));
       Timestamp pastTimestamp = Timestamp.fromDate(pastDateTime);
-      DateTime futureDateTime = nowDateTime.add(Duration(days: 8));
+      DateTime futureDateTime = nowDateTime.add(Duration(days: 10));
 
       // getting all the documents from snapshot
       final snapshot = await FirebaseFirestore.instance
